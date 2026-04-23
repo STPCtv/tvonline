@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Launcher TV</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: url("fondo.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+}
+
+.overlay {
+    background: rgba(0,0,0,0.6);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: rgba(20,20,20,0.85);
+    border-radius: 20px;
+    padding: 30px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 18px;
+}
+
+.card:focus, .card:hover {
+    transform: scale(1.1);
+    outline: 3px solid #00e5ff;
+}
+
+.add-btn {
+    background: rgba(0,150,0,0.7);
+}
+
+.locked {
+    border: 2px solid red;
+}
+
+/* BOTONES */
+.controls {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+}
+
+.controls button {
+    margin-right: 10px;
+    padding: 12px 18px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* modo edición */
+.editing .card {
+    outline: 2px dashed orange;
+}
+
+/* Editor */
+#editor {
+    display: none;
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.9);
+    justify-content: center;
+    align-items: center;
+}
+
+.editor-box {
+    background:#222;
+    padding:20px;
+    border-radius:15px;
+    width:300px;
+    text-align:center;
+}
+
+.editor-box input {
+    width: 100%;
+    margin:10px 0;
+    padding:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="overlay">
+<h1>Mis accesos</h1>
+<div class="grid" id="grid"></div>
+</div>
+
+<!-- BOTONES -->
+<div class="controls">
+    <button onclick="toggleEditMode()">Editar</button>
+    <button onclick="deleteMode()">Borrar</button>
+</div>
+
+<!-- Editor -->
+<div id="editor">
+    <div class="editor-box">
+        <h2 id="editorTitle">Editar</h2>
+        <input id="nameInput" placeholder="Nombre">
+        <input id="urlInput" placeholder="URL">
+        <br>
+        <button onclick="saveEditor()">Guardar</button>
+        <button onclick="closeEditor()">Cancelar</button>
+    </div>
+</div>
+
+<script>
+// 🔒 LINKS PROTEGIDOS
+const fixedLinks = [
+    { name: "TV en vivo", url: "https://pelisjuanita.com/tv/" },
+    { name: "Futbol", url: "https://tvhdlibre.com/" }
+];
+
+// 🧩 LINKS EDITABLES
+let userLinks = JSON.parse(localStorage.getItem("links")) || [];
+
+const grid = document.getElementById("grid");
+
+let editMode = false;
+let deleteModeActive = false;
+let editIndex = null;
+
+function render() {
+    grid.innerHTML = "";
+
+    // 🔒 render protegidos
+    fixedLinks.forEach(link => {
+        const div = document.createElement("div");
+        div.className = "card locked";
+        div.innerText = link.name;
+        div.onclick = () => location.href = link.url;
+        grid.appendChild(div);
+    });
+
+    // 🧩 render editables
+    userLinks.forEach((link, i) => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerText = link.name;
+
+        div.onclick = () => {
+            if (editMode) editLink(i);
+            else if (deleteModeActive) deleteLink(i);
+            else location.href = link.url;
+        };
+
+        grid.appendChild(div);
+    });
+
+    // ➕ agregar
+    const add = document.createElement("div");
+    add.className = "card add-btn";
+    add.innerText = "+ Agregar";
+
+    add.onclick = () => {
+        if (editMode) addLink();
+    };
+
+    grid.appendChild(add);
+}
+
+function toggleEditMode() {
+    editMode = !editMode;
+    deleteModeActive = false;
+    document.body.classList.toggle("editing", editMode);
+}
+
+function deleteMode() {
+    deleteModeActive = !deleteModeActive;
+    editMode = false;
+    document.body.classList.toggle("editing", deleteModeActive);
+}
+
+function addLink() {
+    editIndex = null;
+    document.getElementById("nameInput").value = "";
+    document.getElementById("urlInput").value = "";
+    openEditor();
+}
+
+function editLink(i) {
+    editIndex = i;
+    document.getElementById("nameInput").value = userLinks[i].name;
+    document.getElementById("urlInput").value = userLinks[i].url;
+    openEditor();
+}
+
+function deleteLink(i) {
+    if (!confirm("¿Eliminar acceso?")) return;
+    userLinks.splice(i, 1);
+    save();
+}
+
+function openEditor() {
+    document.getElementById("editor").style.display = "flex";
+}
+
+function closeEditor() {
+    document.getElementById("editor").style.display = "none";
+}
+
+function saveEditor() {
+    const name = nameInput.value.trim();
+    const url = urlInput.value.trim();
+
+    if (!name || !url) return;
+
+    if (editIndex === null) {
+        userLinks.push({ name, url });
+    } else {
+        userLinks[editIndex] = { name, url };
+    }
+
+    save();
+    closeEditor();
+}
+
+function save() {
+    localStorage.setItem("links", JSON.stringify(userLinks));
+    render();
+}
+
+render();
+</script>
+
+</body>
+</html>
