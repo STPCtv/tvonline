@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>MENU STPC TV - Canales en vivo</title>
     
-    <!-- Meta tags anti-caché (fundamental en TV) -->
+    <!-- Meta tags anti-caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
-    <!-- Font Awesome 6 (Free Icons) - CDN rápido y liviano -->
+    <!-- Font Awesome 6 (CDN rápido) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
-        /* ========== RESET ULTRALIGERO ========== */
+        /* RESET EXTREMADAMENTE LIGERO - SIN ANIMACIONES NI EFECTOS PESADOS */
         * {
             margin: 0;
             padding: 0;
@@ -22,30 +22,39 @@
         }
         
         body {
-            margin: 0;
-            background: #0a0a0a url("fondo.jpg") no-repeat center center fixed;
-            background-size: cover;
+            background: #0a0a0a;
             font-family: 'Segoe UI', Roboto, Arial, sans-serif;
             color: white;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
         
-        /* Overlay oscuro suave */
+        /* Fondo con imagen optimizada (sin repaints) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("fondo.jpg") no-repeat center center fixed;
+            background-size: cover;
+            opacity: 0.6;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Overlay simple sin blur */
         .overlay {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             min-height: 100vh;
-            padding: 20px;
-            padding-bottom: 40px;
+            padding: 20px 20px 40px 20px;
         }
         
-        /* Título con estilo TV */
+        /* Título simple */
         h1 {
             text-align: center;
-            font-size: 1.9rem;
+            font-size: 1.8rem;
             margin-bottom: 25px;
             font-weight: 700;
-            letter-spacing: 2px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -56,135 +65,116 @@
         h1 i {
             font-size: 2rem;
             color: #ff9800;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
         
-        /* Grid optimizado para TV (similar a la foto: muchas tarjetas con íconos) */
+        /* Grid optimizado para TV - sin transformaciones innecesarias */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
             padding: 5px;
             max-width: 1600px;
             margin: 0 auto;
-            transform: translateZ(0);
         }
         
-        /* Tarjetas modernas con iconos y sombra ligera */
+        /* Tarjetas - SIN TRANSICIONES, SIN ANIMACIONES, SIN BACKDROP-FILTER */
         .card {
-            background: linear-gradient(145deg, rgba(28, 28, 40, 0.95), rgba(18, 18, 28, 0.95));
-            border-radius: 20px;
-            padding: 16px 8px;
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 14px 6px;
             text-align: center;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.15s ease;
-            backdrop-filter: blur(2px);
+            font-size: 13px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
+            transition: none;
         }
         
-        /* Estilo para el ícono dentro de la tarjeta */
+        /* Iconos simples */
         .card i {
-            font-size: 32px;
+            font-size: 34px;
             color: #ffaa33;
-            transition: transform 0.1s ease;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
         }
         
-        /* Texto del canal */
         .card span {
             display: block;
             font-weight: 600;
-            letter-spacing: 0.5px;
             word-break: break-word;
         }
         
-        /* Efecto hover/focus para TV (sin scale pesado) */
-        .card:hover, .card:focus {
-            background: linear-gradient(145deg, rgba(55, 55, 85, 0.98), rgba(40, 40, 65, 0.98));
-            border: 2px solid #00e5ff;
-            transform: translateY(-2px);
-            outline: none;
+        /* Hover más simple posible - solo cambio de color */
+        .card:hover {
+            background: #2a2a4e;
+            border-color: #ffaa33;
         }
         
-        .card:hover i, .card:focus i {
-            transform: scale(1.05);
-            color: #ffdd55;
-        }
-        
-        /* Foco para navegación con mando */
+        /* Focus para control remoto */
         .card:focus-visible {
             outline: 3px solid #ff9800;
-            outline-offset: 3px;
+            outline-offset: 2px;
+            background: #2a2a4e;
             border-color: #ff9800;
         }
         
-        /* Indicador de canal fijo con estrella (como el original) pero mejorado */
+        /* Estrella fija para todos los canales */
         .locked {
             position: relative;
-            border-left: 4px solid #ff5555;
         }
         
         .locked::before {
             content: "★";
             position: absolute;
-            top: 8px;
+            top: 6px;
             left: 10px;
-            font-size: 14px;
+            font-size: 12px;
             color: #ffcc00;
-            text-shadow: 0 0 2px black;
-            z-index: 2;
+            z-index: 1;
         }
         
-        /* Scroll personalizado */
+        /* Scroll simple */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         
         ::-webkit-scrollbar-track {
             background: #1e1e1e;
-            border-radius: 10px;
         }
         
         ::-webkit-scrollbar-thumb {
             background: #ff9800;
-            border-radius: 10px;
+            border-radius: 3px;
         }
         
-        /* Responsive para TV grande (pantallas anchas) */
+        /* Responsive TV grande */
         @media (min-width: 1400px) {
             .grid {
-                grid-template-columns: repeat(8, minmax(140px, 1fr));
-                gap: 18px;
-            }
-            .card {
-                padding: 18px 6px;
+                grid-template-columns: repeat(8, minmax(135px, 1fr));
+                gap: 14px;
             }
             .card i {
                 font-size: 38px;
             }
             .card span {
-                font-size: 15px;
+                font-size: 14px;
             }
         }
         
         @media (max-width: 900px) {
             .grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 12px;
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 10px;
             }
             .card {
-                padding: 12px 5px;
+                padding: 10px 4px;
             }
             .card i {
-                font-size: 28px;
+                font-size: 26px;
             }
             .card span {
                 font-size: 11px;
@@ -192,27 +182,6 @@
             h1 {
                 font-size: 1.4rem;
             }
-        }
-        
-        /* Efecto sutil de carga */
-        .hidden {
-            display: none;
-        }
-        
-        /* pequeña animación de entrada para las cards */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .card {
-            animation: fadeInUp 0.2s ease forwards;
         }
     </style>
 </head>
@@ -227,27 +196,21 @@
     </div>
 
     <script>
-        // ========== PREVENCIÓN TOTAL DE CACHÉ Y COOKIES ==========
+        // ========== LIMPIEZA RÁPIDA DE CACHÉ ==========
         (function() {
-            // Limpiar cookies residuales
+            // Limpiar cookies
             document.cookie.split(";").forEach(function(c) {
                 document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
             });
-            
-            // Forzar recarga si viene de caché (BFcache)
+            // Recargar si viene de caché
             window.addEventListener('pageshow', function(event) {
-                if (event.persisted || (performance && performance.navigation.type === 2)) {
+                if (event.persisted) {
                     window.location.reload();
                 }
             });
-            
-            // Refresh de fondo con timestamp anti-caché
-            const timestamp = Date.now();
-            document.body.style.backgroundImage = 'url("fondo.jpg?t=' + timestamp + '")';
         })();
         
-        // ========== LISTA DE CANALES CON ICONOS ASIGNADOS (cada canal tiene un ícono único según su temática) ==========
-        // Mapeo de íconos por palabras clave para dar estilo visual tipo "foto de referencia"
+        // ========== LISTA DE CANALES ==========
         const channels = [
             { name: "TV EN VIVO", url: "https://pelisjuanita.com/tv/", icon: "fas fa-play-circle" },
             { name: "FUTBOL", url: "https://futbollibretv.su/", icon: "fas fa-futbol" },
@@ -305,99 +268,61 @@
             { name: "MTV", url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1", icon: "fas fa-music" }
         ];
         
-        // Función para asignar ícono de respaldo o mejorado según el nombre (por si algún canal no tiene ícono definido)
-        function getIconForChannel(channelName, defaultIcon) {
-            if (defaultIcon && defaultIcon !== "") return defaultIcon;
-            
-            const nameUpper = channelName.toUpperCase();
-            if (nameUpper.includes("FUTBOL") || nameUpper.includes("SPORT") || nameUpper.includes("ESPN") || nameUpper.includes("DEPORT")) return "fas fa-futbol";
-            if (nameUpper.includes("PELI") || nameUpper.includes("CINE") || nameUpper.includes("MOVIE")) return "fas fa-film";
-            if (nameUpper.includes("NOTICIA") || nameUpper.includes("TN") || nameUpper.includes("CRONICA") || nameUpper.includes("A24") || nameUpper.includes("C5N")) return "fas fa-newspaper";
-            if (nameUpper.includes("INFANTIL") || nameUpper.includes("NICK") || nameUpper.includes("DISNEY") || nameUpper.includes("CARTOON")) return "fas fa-child";
-            if (nameUpper.includes("MUSIC") || nameUpper.includes("MTV")) return "fas fa-music";
-            if (nameUpper.includes("HISTORY")) return "fas fa-landmark";
-            if (nameUpper.includes("GOURMET") || nameUpper.includes("COCINA")) return "fas fa-utensils";
-            if (nameUpper.includes("ANIMAL")) return "fas fa-paw";
-            if (nameUpper.includes("NACIONAL") || nameUpper.includes("PUBLICA")) return "fas fa-university";
-            return "fas fa-tv"; // ícono por defecto
+        // Función simple para obtener icono por defecto si falta
+        function getDefaultIcon(name) {
+            const n = name.toUpperCase();
+            if (n.includes("FUTBOL") || n.includes("SPORT") || n.includes("ESPN") || n.includes("DEPORT")) return "fas fa-futbol";
+            if (n.includes("PELI") || n.includes("CINE")) return "fas fa-film";
+            if (n.includes("NOTICIA") || n.includes("TN") || n.includes("CRONICA") || n.includes("A24") || n.includes("C5N")) return "fas fa-newspaper";
+            if (n.includes("NICK") || n.includes("DISNEY") || n.includes("CARTOON")) return "fas fa-child";
+            if (n.includes("MUSIC") || n.includes("MTV")) return "fas fa-music";
+            if (n.includes("HISTORY")) return "fas fa-landmark";
+            if (n.includes("GOURMET")) return "fas fa-utensils";
+            if (n.includes("ANIMAL")) return "fas fa-paw";
+            return "fas fa-tv";
         }
         
-        // Consolidamos los canales con íconos personalizados dinámicamente pero respetando los definidos
-        const finalChannels = channels.map(ch => {
-            let finalIcon = ch.icon || "";
-            if (!finalIcon || finalIcon === "") {
-                finalIcon = getIconForChannel(ch.name, "");
+        // Preparar canales con iconos
+        for (let i = 0; i < channels.length; i++) {
+            if (!channels[i].icon || channels[i].icon === "") {
+                channels[i].icon = getDefaultIcon(channels[i].name);
             }
-            return { ...ch, icon: finalIcon };
-        });
+        }
         
         const grid = document.getElementById("grid");
         
-        // ========== RENDERIZADO RÁPIDO CON ICONOS Y ESTILO TIPO FOTO ==========
-        function renderChannelsWithIcons() {
-            const fragment = document.createDocumentFragment();
-            
-            for (let i = 0; i < finalChannels.length; i++) {
-                const channel = finalChannels[i];
-                const card = document.createElement("div");
-                card.className = "card locked";   // "locked" muestra la estrella como en el diseño previo (todos fijos)
-                
-                // Crear elemento icono
-                const iconElem = document.createElement("i");
-                // Los íconos vienen con clases tipo "fas fa-tv", hay que separar si es fab o fas
-                let iconClasses = channel.icon;
-                if (!iconClasses.includes("fa-")) {
-                    iconClasses = "fas fa-tv";
-                }
-                iconElem.className = iconClasses;
-                
-                // Crear span con el nombre
-                const nameSpan = document.createElement("span");
-                nameSpan.textContent = channel.name;
-                
-                card.appendChild(iconElem);
-                card.appendChild(nameSpan);
-                
-                // Guardamos URL en dataset
-                card.dataset.url = channel.url;
-                
-                // Evento click directo (óptimo)
-                card.onclick = (function(url) {
-                    return function() { 
-                        window.open(url, "_blank"); 
-                    };
-                })(channel.url);
-                
-                // Accesibilidad teclado (Enter / Space)
-                card.setAttribute("tabindex", "0");
-                card.onkeypress = (function(url) {
-                    return function(e) {
-                        if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            window.open(url, "_blank");
-                        }
-                    };
-                })(channel.url);
-                
-                fragment.appendChild(card);
+        // Renderizado ultra rápido - sin closures innecesarias
+        function render() {
+            let html = '';
+            for (let i = 0; i < channels.length; i++) {
+                const ch = channels[i];
+                const iconClass = ch.icon;
+                html += `
+                    <div class="card locked" data-url="${ch.url}" tabindex="0">
+                        <i class="${iconClass}"></i>
+                        <span>${ch.name}</span>
+                    </div>
+                `;
             }
+            grid.innerHTML = html;
             
-            grid.innerHTML = "";
-            grid.appendChild(fragment);
+            // Asignar eventos de forma eficiente (delegación)
+            const cards = document.querySelectorAll('.card');
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                const url = card.dataset.url;
+                card.onclick = function() { window.open(url, "_blank"); };
+                card.onkeypress = function(e) {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        window.open(url, "_blank");
+                    }
+                };
+            }
         }
         
-        // Ejecutar el render principal
-        renderChannelsWithIcons();
-        
-        // Timeout de seguridad por si falla algo (recarga parcial)
-        setTimeout(() => {
-            if (document.visibilityState === "visible" && grid.children.length === 0) {
-                renderChannelsWithIcons();
-            }
-        }, 500);
-        
-        // Pequeño log para verificar carga correcta (útil para debugging)
-        console.log("✅ MENU STPC TV con íconos cargado - Canales: " + finalChannels.length);
+        render();
+        console.log("✅ MENU STPC TV optimizado - " + channels.length + " canales cargados");
     </script>
 </body>
 </html>
