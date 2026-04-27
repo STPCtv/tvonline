@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>MENU STPC TV</title>
+    <title>MENU STPC TV - Canales en vivo</title>
     
     <!-- Meta tags anti-caché (fundamental en TV) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    
+    <!-- Font Awesome 6 (Free Icons) - CDN rápido y liviano -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
         /* ========== RESET ULTRALIGERO ========== */
@@ -20,241 +23,352 @@
         
         body {
             margin: 0;
-            /* Eliminamos backdrop-filter y efectos pesados */
             background: #0a0a0a url("fondo.jpg") no-repeat center center fixed;
             background-size: cover;
             font-family: 'Segoe UI', Roboto, Arial, sans-serif;
             color: white;
-            /* Desactivamos suavizado de fuente en TV (mejora rendimiento) */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
         
-        /* Overlay simple sin blur */
+        /* Overlay oscuro suave */
         .overlay {
-            background: rgba(0, 0, 0, 0.65);
+            background: rgba(0, 0, 0, 0.7);
             min-height: 100vh;
             padding: 20px;
-            padding-bottom: 30px;
+            padding-bottom: 40px;
         }
         
-        /* Título simple sin sombras complejas */
+        /* Título con estilo TV */
         h1 {
             text-align: center;
-            font-size: 1.8rem;
+            font-size: 1.9rem;
             margin-bottom: 25px;
-            letter-spacing: 1px;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         
-        /* Grid SIMPLE y RÁPIDO (sin auto-fill que recalcula) */
+        h1 i {
+            font-size: 2rem;
+            color: #ff9800;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        /* Grid optimizado para TV (similar a la foto: muchas tarjetas con íconos) */
         .grid {
             display: grid;
-            /* Usamos grid fijo por filas en lugar de auto-fill para TV */
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 14px;
             padding: 5px;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
-            /* Aceleración por hardware */
             transform: translateZ(0);
-            will-change: auto;
         }
         
-        /* Tarjetas SIMPLES - SIN transform, SIN blur, SIN sombras complejas */
+        /* Tarjetas modernas con iconos y sombra ligera */
         .card {
-            background: rgba(25, 25, 35, 0.92);
-            border-radius: 16px;
-            padding: 16px 6px;
+            background: linear-gradient(145deg, rgba(28, 28, 40, 0.95), rgba(18, 18, 28, 0.95));
+            border-radius: 20px;
+            padding: 16px 8px;
             text-align: center;
             cursor: pointer;
+            font-weight: 600;
             font-size: 14px;
-            font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            /* Sombra simple, sin difuminado excesivo */
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            /* Transición mínima (casi sin efecto para ahorrar recursos) */
-            transition: background 0.1s ease;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.15s ease;
+            backdrop-filter: blur(2px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
         
-        /* Eliminamos el scale (causa lentitud en TV) - usamos solo cambio de color/borde */
+        /* Estilo para el ícono dentro de la tarjeta */
+        .card i {
+            font-size: 32px;
+            color: #ffaa33;
+            transition: transform 0.1s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        
+        /* Texto del canal */
+        .card span {
+            display: block;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            word-break: break-word;
+        }
+        
+        /* Efecto hover/focus para TV (sin scale pesado) */
         .card:hover, .card:focus {
-            background: rgba(55, 55, 75, 0.96);
+            background: linear-gradient(145deg, rgba(55, 55, 85, 0.98), rgba(40, 40, 65, 0.98));
             border: 2px solid #00e5ff;
+            transform: translateY(-2px);
             outline: none;
         }
         
-        /* Efecto de "foco" para navegación con mando (sin scale) */
+        .card:hover i, .card:focus i {
+            transform: scale(1.05);
+            color: #ffdd55;
+        }
+        
+        /* Foco para navegación con mando */
         .card:focus-visible {
             outline: 3px solid #ff9800;
-            outline-offset: 2px;
+            outline-offset: 3px;
             border-color: #ff9800;
         }
         
-        /* Canales fijos con indicador simple */
+        /* Indicador de canal fijo con estrella (como el original) pero mejorado */
         .locked {
+            position: relative;
             border-left: 4px solid #ff5555;
         }
         
         .locked::before {
             content: "★";
             position: absolute;
-            margin-left: -22px;
-            font-size: 11px;
+            top: 8px;
+            left: 10px;
+            font-size: 14px;
             color: #ffcc00;
+            text-shadow: 0 0 2px black;
+            z-index: 2;
         }
         
-        /* Scroll minimalista */
+        /* Scroll personalizado */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
         }
         
         ::-webkit-scrollbar-track {
             background: #1e1e1e;
+            border-radius: 10px;
         }
         
         ::-webkit-scrollbar-thumb {
             background: #ff9800;
-            border-radius: 3px;
+            border-radius: 10px;
         }
         
-        /* Responsive para TV (pantallas grandes) */
-        @media (min-width: 1200px) {
+        /* Responsive para TV grande (pantallas anchas) */
+        @media (min-width: 1400px) {
             .grid {
-                grid-template-columns: repeat(8, minmax(130px, 1fr));
-                gap: 16px;
+                grid-template-columns: repeat(8, minmax(140px, 1fr));
+                gap: 18px;
             }
             .card {
-                padding: 18px 5px;
+                padding: 18px 6px;
+            }
+            .card i {
+                font-size: 38px;
+            }
+            .card span {
                 font-size: 15px;
             }
         }
         
         @media (max-width: 900px) {
             .grid {
-                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
                 gap: 12px;
             }
             .card {
-                padding: 12px 4px;
-                font-size: 12px;
+                padding: 12px 5px;
+            }
+            .card i {
+                font-size: 28px;
+            }
+            .card span {
+                font-size: 11px;
             }
             h1 {
                 font-size: 1.4rem;
             }
         }
         
-        /* Clase oculta para cualquier loader innecesario */
+        /* Efecto sutil de carga */
         .hidden {
             display: none;
+        }
+        
+        /* pequeña animación de entrada para las cards */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card {
+            animation: fadeInUp 0.2s ease forwards;
         }
     </style>
 </head>
 <body>
     <div class="overlay">
-        <h1>📺 MENU STPC TV</h1>
+        <h1>
+            <i class="fas fa-tv"></i> 
+            MENU STPC TV 
+            <i class="fas fa-satellite-dish"></i>
+        </h1>
         <div class="grid" id="grid"></div>
     </div>
 
     <script>
         // ========== PREVENCIÓN TOTAL DE CACHÉ Y COOKIES ==========
         (function() {
-            // Limpiar cualquier cookie residual
+            // Limpiar cookies residuales
             document.cookie.split(";").forEach(function(c) {
                 document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
             });
             
-            // Forzar que NO use caché del navegador
+            // Forzar recarga si viene de caché (BFcache)
             window.addEventListener('pageshow', function(event) {
                 if (event.persisted || (performance && performance.navigation.type === 2)) {
                     window.location.reload();
                 }
             });
             
-            // Agregar timestamp a la imagen de fondo si existe
-            const bgImage = new Image();
-            bgImage.src = "fondo.jpg?t=" + Date.now();
-            document.body.style.backgroundImage = 'url("fondo.jpg?t=' + Date.now() + '")';
+            // Refresh de fondo con timestamp anti-caché
+            const timestamp = Date.now();
+            document.body.style.backgroundImage = 'url("fondo.jpg?t=' + timestamp + '")';
         })();
         
-        // ========== LISTA DE CANALES (SIN DUPLICADOS POR RENDIMIENTO) ==========
+        // ========== LISTA DE CANALES CON ICONOS ASIGNADOS (cada canal tiene un ícono único según su temática) ==========
+        // Mapeo de íconos por palabras clave para dar estilo visual tipo "foto de referencia"
         const channels = [
-            { name: "TV EN VIVO", url: "https://pelisjuanita.com/tv/" },
-            { name: "FUTBOL", url: "https://futbollibretv.su/" },
-            { name: "TV OP.2", url: "https://www.cxtvenvivo.com/busqueda/?query=argentina" },
-            { name: "TELEFE", url: "https://pelisjuanita.com/tv/telefe" },
-            { name: "CANAL 13", url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ" },
-            { name: "AMERICA", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW" },
-            { name: "TN", url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz" },
-            { name: "LA NACION+", url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u" },
-            { name: "CRONICA", url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW" },
-            { name: "A24", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0" },
-            { name: "C5N", url: "https://dots.bestleague.world/cvatt.html?get=QzVO" },
-            { name: "TV PUBLICA", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3" },
-            { name: "EL NUEVE", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5" },
-            { name: "CANAL 26", url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ" },
-            { name: "TYC SPORTS", url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ" },
-            { name: "DEPORT TV", url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE" },
-            { name: "ESPN", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA" },
-            { name: "ESPN PREMIUM", url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE" },
-            { name: "ESPN 2", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1" },
-            { name: "ESPN 3", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1" },
-            { name: "ESPN 4", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1" },
-            { name: "ESPN 5", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1" },
-            { name: "ESPN 6", url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1" },
-            { name: "ESPN 7", url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1" },
-            { name: "VOLVER", url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1" },
-            { name: "EL GOURMET", url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1" },
-            { name: "CARTOON NETW", url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=" },
-            { name: "NICKELODEON", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=" },
-            { name: "NICK JR", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=" },
-            { name: "DISNEY JR", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=" },
-            { name: "SPACE", url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1" },
-            { name: "DISCOVERY TB", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=" },
-            { name: "HBO PLUS", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1" },
-            { name: "CDAD MAG", url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1" },
-            { name: "HBO EXTREME", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1" },
-            { name: "CINE ARG", url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ" },
-            { name: "SONY", url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1" },
-            { name: "HBO 2", url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1" },
-            { name: "HBO FAMILY", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1" },
-            { name: "HBO", url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1" },
-            { name: "CINECANAL", url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1" },
-            { name: "TCM", url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1" },
-            { name: "LA RURAL", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=" },
-            { name: "HISTORY", url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1" },
-            { name: "HISTORY 2", url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1" },
-            { name: "WARNER", url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1" },
-            { name: "TNT SERIES", url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz" },
-            { name: "CINEMAX", url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==" },
-            { name: "DISCOVERY H&H", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1" },
-            { name: "DISCOVERY", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=" },
-            { name: "AXN", url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=" },
-            { name: "FX", url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==" },
-            { name: "ANIMAL PLANET", url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0" },
-            { name: "MTV", url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1" }
+            { name: "TV EN VIVO", url: "https://pelisjuanita.com/tv/", icon: "fas fa-play-circle" },
+            { name: "FUTBOL", url: "https://futbollibretv.su/", icon: "fas fa-futbol" },
+            { name: "TV OP.2", url: "https://www.cxtvenvivo.com/busqueda/?query=argentina", icon: "fas fa-search" },
+            { name: "TELEFE", url: "https://pelisjuanita.com/tv/telefe", icon: "fas fa-tower-broadcast" },
+            { name: "CANAL 13", url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ", icon: "fas fa-chalkboard-user" },
+            { name: "AMERICA", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW", icon: "fas fa-globe-americas" },
+            { name: "TN", url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz", icon: "fas fa-newspaper" },
+            { name: "LA NACION+", url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u", icon: "fas fa-landmark" },
+            { name: "CRONICA", url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW", icon: "fas fa-clock" },
+            { name: "A24", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0", icon: "fas fa-microphone-alt" },
+            { name: "C5N", url: "https://dots.bestleague.world/cvatt.html?get=QzVO", icon: "fas fa-chart-line" },
+            { name: "TV PUBLICA", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3", icon: "fas fa-university" },
+            { name: "EL NUEVE", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5", icon: "fas fa-hashtag" },
+            { name: "CANAL 26", url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ", icon: "fas fa-broadcast-tower" },
+            { name: "TYC SPORTS", url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ", icon: "fas fa-medal" },
+            { name: "DEPORT TV", url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE", icon: "fas fa-running" },
+            { name: "ESPN", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA", icon: "fab fa-js" },
+            { name: "ESPN PREMIUM", url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", icon: "fas fa-crown" },
+            { name: "ESPN 2", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1", icon: "fas fa-2" },
+            { name: "ESPN 3", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1", icon: "fas fa-3" },
+            { name: "ESPN 4", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1", icon: "fas fa-4" },
+            { name: "ESPN 5", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1", icon: "fas fa-5" },
+            { name: "ESPN 6", url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", icon: "fas fa-6" },
+            { name: "ESPN 7", url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", icon: "fas fa-7" },
+            { name: "VOLVER", url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1", icon: "fas fa-film" },
+            { name: "EL GOURMET", url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1", icon: "fas fa-utensils" },
+            { name: "CARTOON NETW", url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=", icon: "fas fa-bug" },
+            { name: "NICKELODEON", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=", icon: "fas fa-smile" },
+            { name: "NICK JR", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=", icon: "fas fa-baby" },
+            { name: "DISNEY JR", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=", icon: "fas fa-mickey" },
+            { name: "SPACE", url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1", icon: "fas fa-rocket" },
+            { name: "DISCOVERY TB", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=", icon: "fas fa-microscope" },
+            { name: "HBO PLUS", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1", icon: "fas fa-plus-circle" },
+            { name: "CDAD MAG", url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1", icon: "fas fa-magic" },
+            { name: "HBO EXTREME", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1", icon: "fas fa-fire" },
+            { name: "CINE ARG", url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ", icon: "fas fa-clapperboard" },
+            { name: "SONY", url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1", icon: "fab fa-sony" },
+            { name: "HBO 2", url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1", icon: "fas fa-2" },
+            { name: "HBO FAMILY", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1", icon: "fas fa-users" },
+            { name: "HBO", url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1", icon: "fas fa-crown" },
+            { name: "CINECANAL", url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1", icon: "fas fa-video" },
+            { name: "TCM", url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1", icon: "fas fa-film" },
+            { name: "LA RURAL", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=", icon: "fas fa-tree" },
+            { name: "HISTORY", url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1", icon: "fas fa-landmark" },
+            { name: "HISTORY 2", url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1", icon: "fas fa-book" },
+            { name: "WARNER", url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1", icon: "fab fa-waze" },
+            { name: "TNT SERIES", url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz", icon: "fas fa-tv" },
+            { name: "CINEMAX", url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==", icon: "fas fa-camera-movie" },
+            { name: "DISCOVERY H&H", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", icon: "fas fa-home" },
+            { name: "DISCOVERY", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=", icon: "fas fa-globe" },
+            { name: "AXN", url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=", icon: "fas fa-bolt" },
+            { name: "FX", url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==", icon: "fas fa-skull" },
+            { name: "ANIMAL PLANET", url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0", icon: "fas fa-paw" },
+            { name: "MTV", url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1", icon: "fas fa-music" }
         ];
+        
+        // Función para asignar ícono de respaldo o mejorado según el nombre (por si algún canal no tiene ícono definido)
+        function getIconForChannel(channelName, defaultIcon) {
+            if (defaultIcon && defaultIcon !== "") return defaultIcon;
+            
+            const nameUpper = channelName.toUpperCase();
+            if (nameUpper.includes("FUTBOL") || nameUpper.includes("SPORT") || nameUpper.includes("ESPN") || nameUpper.includes("DEPORT")) return "fas fa-futbol";
+            if (nameUpper.includes("PELI") || nameUpper.includes("CINE") || nameUpper.includes("MOVIE")) return "fas fa-film";
+            if (nameUpper.includes("NOTICIA") || nameUpper.includes("TN") || nameUpper.includes("CRONICA") || nameUpper.includes("A24") || nameUpper.includes("C5N")) return "fas fa-newspaper";
+            if (nameUpper.includes("INFANTIL") || nameUpper.includes("NICK") || nameUpper.includes("DISNEY") || nameUpper.includes("CARTOON")) return "fas fa-child";
+            if (nameUpper.includes("MUSIC") || nameUpper.includes("MTV")) return "fas fa-music";
+            if (nameUpper.includes("HISTORY")) return "fas fa-landmark";
+            if (nameUpper.includes("GOURMET") || nameUpper.includes("COCINA")) return "fas fa-utensils";
+            if (nameUpper.includes("ANIMAL")) return "fas fa-paw";
+            if (nameUpper.includes("NACIONAL") || nameUpper.includes("PUBLICA")) return "fas fa-university";
+            return "fas fa-tv"; // ícono por defecto
+        }
+        
+        // Consolidamos los canales con íconos personalizados dinámicamente pero respetando los definidos
+        const finalChannels = channels.map(ch => {
+            let finalIcon = ch.icon || "";
+            if (!finalIcon || finalIcon === "") {
+                finalIcon = getIconForChannel(ch.name, "");
+            }
+            return { ...ch, icon: finalIcon };
+        });
         
         const grid = document.getElementById("grid");
         
-        // ========== RENDERIZADO ULTRA RÁPIDO ==========
-        // Usamos DocumentFragment para minimizar reflows
-        function renderChannels() {
+        // ========== RENDERIZADO RÁPIDO CON ICONOS Y ESTILO TIPO FOTO ==========
+        function renderChannelsWithIcons() {
             const fragment = document.createDocumentFragment();
             
-            for (let i = 0; i < channels.length; i++) {
-                const channel = channels[i];
+            for (let i = 0; i < finalChannels.length; i++) {
+                const channel = finalChannels[i];
                 const card = document.createElement("div");
-                card.className = "card locked";
-                card.textContent = channel.name;
-                // Guardamos URL en dataset para acceso rápido
+                card.className = "card locked";   // "locked" muestra la estrella como en el diseño previo (todos fijos)
+                
+                // Crear elemento icono
+                const iconElem = document.createElement("i");
+                // Los íconos vienen con clases tipo "fas fa-tv", hay que separar si es fab o fas
+                let iconClasses = channel.icon;
+                if (!iconClasses.includes("fa-")) {
+                    iconClasses = "fas fa-tv";
+                }
+                iconElem.className = iconClasses;
+                
+                // Crear span con el nombre
+                const nameSpan = document.createElement("span");
+                nameSpan.textContent = channel.name;
+                
+                card.appendChild(iconElem);
+                card.appendChild(nameSpan);
+                
+                // Guardamos URL en dataset
                 card.dataset.url = channel.url;
-                // Evento click directo sin delegación (más rápido)
+                
+                // Evento click directo (óptimo)
                 card.onclick = (function(url) {
-                    return function() { window.open(url, "_blank"); };
+                    return function() { 
+                        window.open(url, "_blank"); 
+                    };
                 })(channel.url);
-                // Soporte para teclado (enter)
+                
+                // Accesibilidad teclado (Enter / Space)
                 card.setAttribute("tabindex", "0");
                 card.onkeypress = (function(url) {
                     return function(e) {
@@ -264,23 +378,26 @@
                         }
                     };
                 })(channel.url);
+                
                 fragment.appendChild(card);
             }
             
-            // Limpiamos y agregamos todo de una sola vez
             grid.innerHTML = "";
             grid.appendChild(fragment);
         }
         
-        // Ejecutar render
-        renderChannels();
+        // Ejecutar el render principal
+        renderChannelsWithIcons();
         
-        // Recargar si la página se queda congelada (timeout de seguridad)
+        // Timeout de seguridad por si falla algo (recarga parcial)
         setTimeout(() => {
             if (document.visibilityState === "visible" && grid.children.length === 0) {
-                renderChannels();
+                renderChannelsWithIcons();
             }
         }, 500);
+        
+        // Pequeño log para verificar carga correcta (útil para debugging)
+        console.log("✅ MENU STPC TV con íconos cargado - Canales: " + finalChannels.length);
     </script>
 </body>
 </html>
