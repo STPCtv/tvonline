@@ -3,114 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>MENU STPC TV ONLINE</title>
+    <title>MENU STPC TV</title>
     
-    <!-- Meta tags para prevenir caché y cookies -->
+    <!-- Meta tags anti-caché (fundamental en TV) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
     <style>
-        /* Reset y estilos base */
+        /* ========== RESET ULTRALIGERO ========== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* Evita selección de texto en TV */
         }
         
         body {
             margin: 0;
-            font-family: 'Arial', 'Segoe UI', sans-serif;
-            background: url("fondo.jpg") no-repeat center center fixed;
+            /* Eliminamos backdrop-filter y efectos pesados */
+            background: #0a0a0a url("fondo.jpg") no-repeat center center fixed;
             background-size: cover;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
             color: white;
-            overflow-x: hidden;
+            /* Desactivamos suavizado de fuente en TV (mejora rendimiento) */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
-        /* Overlay para mejorar legibilidad */
+        /* Overlay simple sin blur */
         .overlay {
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.65);
             min-height: 100vh;
             padding: 20px;
             padding-bottom: 30px;
         }
         
-        /* Título principal */
+        /* Título simple sin sombras complejas */
         h1 {
             text-align: center;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             margin-bottom: 25px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             letter-spacing: 1px;
+            font-weight: 600;
         }
         
-        /* Grid responsivo - mejor para TV */
+        /* Grid SIMPLE y RÁPIDO (sin auto-fill que recalcula) */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 18px;
-            padding: 10px;
+            /* Usamos grid fijo por filas en lugar de auto-fill para TV */
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 14px;
+            padding: 5px;
             max-width: 1400px;
             margin: 0 auto;
+            /* Aceleración por hardware */
+            transform: translateZ(0);
+            will-change: auto;
         }
         
-        /* Tarjetas de canales */
+        /* Tarjetas SIMPLES - SIN transform, SIN blur, SIN sombras complejas */
         .card {
-            background: rgba(20,20,20,0.88);
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            padding: 18px 8px;
+            background: rgba(25, 25, 35, 0.92);
+            border-radius: 16px;
+            padding: 16px 6px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s ease;
             font-size: 14px;
-            font-weight: bold;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            /* Sombra simple, sin difuminado excesivo */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            /* Transición mínima (casi sin efecto para ahorrar recursos) */
+            transition: background 0.1s ease;
         }
         
-        .card:focus, .card:hover {
-            transform: scale(1.05);
-            outline: 3px solid #00e5ff;
-            background: rgba(40,40,40,0.95);
-            border-color: #00e5ff;
+        /* Eliminamos el scale (causa lentitud en TV) - usamos solo cambio de color/borde */
+        .card:hover, .card:focus {
+            background: rgba(55, 55, 75, 0.96);
+            border: 2px solid #00e5ff;
+            outline: none;
         }
         
-        /* Estilo para canales fijos */
+        /* Efecto de "foco" para navegación con mando (sin scale) */
+        .card:focus-visible {
+            outline: 3px solid #ff9800;
+            outline-offset: 2px;
+            border-color: #ff9800;
+        }
+        
+        /* Canales fijos con indicador simple */
         .locked {
-            border-left: 4px solid #ff4444;
-            position: relative;
+            border-left: 4px solid #ff5555;
         }
         
         .locked::before {
             content: "★";
             position: absolute;
-            top: 5px;
-            right: 8px;
-            font-size: 12px;
-            color: gold;
+            margin-left: -22px;
+            font-size: 11px;
+            color: #ffcc00;
         }
         
-        /* Scroll suave */
+        /* Scroll minimalista */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         
         ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+            background: #1e1e1e;
         }
         
         ::-webkit-scrollbar-thumb {
             background: #ff9800;
-            border-radius: 10px;
+            border-radius: 3px;
         }
         
-        /* Responsive para pantallas pequeñas */
-        @media (max-width: 700px) {
+        /* Responsive para TV (pantallas grandes) */
+        @media (min-width: 1200px) {
             .grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                grid-template-columns: repeat(8, minmax(130px, 1fr));
+                gap: 16px;
+            }
+            .card {
+                padding: 18px 5px;
+                font-size: 15px;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
                 gap: 12px;
             }
             .card {
@@ -118,51 +141,48 @@
                 font-size: 12px;
             }
             h1 {
-                font-size: 1.3rem;
+                font-size: 1.4rem;
             }
         }
         
-        /* Indicador para enfoque TV (navegación por flechas) */
-        .card:focus {
-            outline: 3px solid #00e5ff;
-            outline-offset: 2px;
+        /* Clase oculta para cualquier loader innecesario */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="overlay">
-        <h1>📺 MENU STPC TV ONLINE</h1>
+        <h1>📺 MENU STPC TV</h1>
         <div class="grid" id="grid"></div>
     </div>
 
     <script>
-        // ---------- PREVENCIÓN DE CACHÉ Y COOKIES ----------
-        // Forzar que el navegador NO almacene en caché ni use cookies para este sitio.
-        (function preventCacheAndCookies() {
-            // Deshabilitar cookies
-            document.cookie = "disableCache=true; path=/; max-age=0; SameSite=Lax";
+        // ========== PREVENCIÓN TOTAL DE CACHÉ Y COOKIES ==========
+        (function() {
+            // Limpiar cualquier cookie residual
+            document.cookie.split(";").forEach(function(c) {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
             
-            // Forzar recarga limpia si el navegador intenta usar bfcache (back-forward cache)
+            // Forzar que NO use caché del navegador
             window.addEventListener('pageshow', function(event) {
-                if (event.persisted) {
+                if (event.persisted || (performance && performance.navigation.type === 2)) {
                     window.location.reload();
                 }
             });
             
-            // Actualizar imagen de fondo con timestamp para evitar caché
-            const bgStyle = document.body.style.backgroundImage;
-            if (bgStyle && bgStyle.includes('fondo.jpg')) {
-                const newBg = `url("fondo.jpg?nocache=${Date.now()}") no-repeat center center fixed`;
-                document.body.style.background = newBg;
-                document.body.style.backgroundSize = 'cover';
-            }
+            // Agregar timestamp a la imagen de fondo si existe
+            const bgImage = new Image();
+            bgImage.src = "fondo.jpg?t=" + Date.now();
+            document.body.style.backgroundImage = 'url("fondo.jpg?t=' + Date.now() + '")';
         })();
         
-        // ---------- LISTA DE CANALES FIJOS ----------
+        // ========== LISTA DE CANALES (SIN DUPLICADOS POR RENDIMIENTO) ==========
         const channels = [
-            { name: "TV en vivo", url: "https://pelisjuanita.com/tv/" },
-            { name: "Futbol", url: "https://futbollibretv.su/" },
-            { name: "TV en vivo op.2", url: "https://www.cxtvenvivo.com/busqueda/?query=argentina" },
+            { name: "TV EN VIVO", url: "https://pelisjuanita.com/tv/" },
+            { name: "FUTBOL", url: "https://futbollibretv.su/" },
+            { name: "TV OP.2", url: "https://www.cxtvenvivo.com/busqueda/?query=argentina" },
             { name: "TELEFE", url: "https://mitelefe.com/telefe-en-vivo" },
             { name: "CANAL 13", url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ" },
             { name: "AMERICA", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW" },
@@ -186,14 +206,14 @@
             { name: "ESPN 7", url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1" },
             { name: "VOLVER", url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1" },
             { name: "EL GOURMET", url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1" },
-            { name: "CARTOON NETWORK", url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=" },
+            { name: "CARTOON NETW", url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=" },
             { name: "NICKELODEON", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=" },
-            { name: "NICKELODEON JR.", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=" },
-            { name: "DISNEY JR.", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=" },
+            { name: "NICK JR", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=" },
+            { name: "DISNEY JR", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=" },
             { name: "SPACE", url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1" },
-            { name: "DISCOVERY TURBO", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=" },
+            { name: "DISCOVERY TB", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=" },
             { name: "HBO PLUS", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1" },
-            { name: "CIUDAD MAGAZINE", url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1" },
+            { name: "CDAD MAG", url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1" },
             { name: "HBO EXTREME", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1" },
             { name: "CINE ARG", url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ" },
             { name: "SONY", url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1" },
@@ -218,40 +238,49 @@
         
         const grid = document.getElementById("grid");
         
-        // Renderizar todos los canales
+        // ========== RENDERIZADO ULTRA RÁPIDO ==========
+        // Usamos DocumentFragment para minimizar reflows
         function renderChannels() {
-            grid.innerHTML = "";
+            const fragment = document.createDocumentFragment();
             
-            channels.forEach(channel => {
+            for (let i = 0; i < channels.length; i++) {
+                const channel = channels[i];
                 const card = document.createElement("div");
                 card.className = "card locked";
-                card.innerText = channel.name;
-                card.setAttribute("data-url", channel.url);
-                card.setAttribute("data-name", channel.name);
-                card.onclick = () => {
-                    window.open(channel.url, "_blank");
-                };
-                // Soporte para navegación por teclado en Smart TVs
+                card.textContent = channel.name;
+                // Guardamos URL en dataset para acceso rápido
+                card.dataset.url = channel.url;
+                // Evento click directo sin delegación (más rápido)
+                card.onclick = (function(url) {
+                    return function() { window.open(url, "_blank"); };
+                })(channel.url);
+                // Soporte para teclado (enter)
                 card.setAttribute("tabindex", "0");
-                card.addEventListener("keypress", (e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        window.open(channel.url, "_blank");
-                    }
-                });
-                grid.appendChild(card);
-            });
+                card.onkeypress = (function(url) {
+                    return function(e) {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            window.open(url, "_blank");
+                        }
+                    };
+                })(channel.url);
+                fragment.appendChild(card);
+            }
+            
+            // Limpiamos y agregamos todo de una sola vez
+            grid.innerHTML = "";
+            grid.appendChild(fragment);
         }
         
-        // Inicializar
+        // Ejecutar render
         renderChannels();
         
-        // Forzar actualización de caché: recargar si se detecta caché
-        window.addEventListener('load', function() {
-            if (performance && performance.navigation && performance.navigation.type === 2) {
-                window.location.reload();
+        // Recargar si la página se queda congelada (timeout de seguridad)
+        setTimeout(() => {
+            if (document.visibilityState === "visible" && grid.children.length === 0) {
+                renderChannels();
             }
-        });
+        }, 500);
     </script>
 </body>
 </html>
