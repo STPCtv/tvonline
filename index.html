@@ -20,12 +20,10 @@
         
         body {
             margin: 0;
-            /* Eliminamos backdrop-filter y efectos pesados */
             background: #0a0a0a url("fondo.jpg") no-repeat center center fixed;
             background-size: cover;
             font-family: 'Segoe UI', Roboto, Arial, sans-serif;
             color: white;
-            /* Desactivamos suavizado de fuente en TV (mejora rendimiento) */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -38,7 +36,7 @@
             padding-bottom: 30px;
         }
         
-        /* Título simple sin sombras complejas */
+        /* Título simple */
         h1 {
             text-align: center;
             font-size: 1.8rem;
@@ -47,21 +45,18 @@
             font-weight: 600;
         }
         
-        /* Grid SIMPLE y RÁPIDO (sin auto-fill que recalcula) */
+        /* Grid rápido */
         .grid {
             display: grid;
-            /* Usamos grid fijo por filas en lugar de auto-fill para TV */
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 14px;
             padding: 5px;
             max-width: 1400px;
             margin: 0 auto;
-            /* Aceleración por hardware */
             transform: translateZ(0);
-            will-change: auto;
         }
         
-        /* Tarjetas SIMPLES - SIN transform, SIN blur, SIN sombras complejas */
+        /* Tarjetas optimizadas */
         .card {
             background: rgba(25, 25, 35, 0.92);
             border-radius: 16px;
@@ -71,27 +66,23 @@
             font-size: 14px;
             font-weight: 500;
             border: 1px solid rgba(255, 255, 255, 0.12);
-            /* Sombra simple, sin difuminado excesivo */
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            /* Transición mínima (casi sin efecto para ahorrar recursos) */
             transition: background 0.1s ease;
         }
         
-        /* Eliminamos el scale (causa lentitud en TV) - usamos solo cambio de color/borde */
         .card:hover, .card:focus {
             background: rgba(55, 55, 75, 0.96);
             border: 2px solid #00e5ff;
             outline: none;
         }
         
-        /* Efecto de "foco" para navegación con mando (sin scale) */
         .card:focus-visible {
             outline: 3px solid #ff9800;
             outline-offset: 2px;
             border-color: #ff9800;
         }
         
-        /* Canales fijos con indicador simple */
+        /* Canales fijos */
         .locked {
             border-left: 4px solid #ff5555;
         }
@@ -104,22 +95,20 @@
             color: #ffcc00;
         }
         
-        /* Scroll minimalista */
+        /* Scroll */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
-        
         ::-webkit-scrollbar-track {
             background: #1e1e1e;
         }
-        
         ::-webkit-scrollbar-thumb {
             background: #ff9800;
             border-radius: 3px;
         }
         
-        /* Responsive para TV (pantallas grandes) */
+        /* Responsive */
         @media (min-width: 1200px) {
             .grid {
                 grid-template-columns: repeat(8, minmax(130px, 1fr));
@@ -144,11 +133,6 @@
                 font-size: 1.4rem;
             }
         }
-        
-        /* Clase oculta para cualquier loader innecesario */
-        .hidden {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -160,30 +144,29 @@
     <script>
         // ========== PREVENCIÓN TOTAL DE CACHÉ Y COOKIES ==========
         (function() {
-            // Limpiar cualquier cookie residual
+            // Limpiar cookies
             document.cookie.split(";").forEach(function(c) {
                 document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
             });
             
-            // Forzar que NO use caché del navegador
+            // Forzar recarga si viene de caché
             window.addEventListener('pageshow', function(event) {
-                if (event.persisted || (performance && performance.navigation.type === 2)) {
+                if (event.persisted || (performance && performance.navigation && performance.navigation.type === 2)) {
                     window.location.reload();
                 }
             });
             
-            // Agregar timestamp a la imagen de fondo si existe
-            const bgImage = new Image();
-            bgImage.src = "fondo.jpg?t=" + Date.now();
+            // Evitar caché de imagen de fondo
             document.body.style.backgroundImage = 'url("fondo.jpg?t=' + Date.now() + '")';
         })();
         
-        // ========== LISTA DE CANALES (SIN DUPLICADOS POR RENDIMIENTO) ==========
+        // ========== LISTA DE CANALES ==========
+        // El canal TELEFE tiene la propiedad "sameTab: true" para evitar el about:blank en TV Bro
         const channels = [
             { name: "TV EN VIVO", url: "https://pelisjuanita.com/tv/" },
             { name: "FUTBOL", url: "https://futbollibretv.su/" },
             { name: "TV OP.2", url: "https://www.cxtvenvivo.com/busqueda/?query=argentina" },
-            { name: "TELEFE", url: "https://mitelefe.com/telefe-en-vivo" },
+            { name: "TELEFE", url: "https://mitelefe.com/telefe-en-vivo", sameTab: true },
             { name: "CANAL 13", url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ" },
             { name: "AMERICA", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW" },
             { name: "TN", url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz" },
@@ -238,8 +221,9 @@
         
         const grid = document.getElementById("grid");
         
-        // ========== RENDERIZADO ULTRA RÁPIDO ==========
-        // Usamos DocumentFragment para minimizar reflows
+        // ========== RENDERIZADO CON MÉTODO ESPECIAL PARA TELEFE ==========
+        // Telefe usa sameTab=true para abrir en la misma pestaña (evita about:blank en TV Bro)
+        // El resto de canales abren en pestaña nueva como siempre
         function renderChannels() {
             const fragment = document.createDocumentFragment();
             
@@ -248,26 +232,49 @@
                 const card = document.createElement("div");
                 card.className = "card locked";
                 card.textContent = channel.name;
-                // Guardamos URL en dataset para acceso rápido
                 card.dataset.url = channel.url;
-                // Evento click directo sin delegación (más rápido)
-                card.onclick = (function(url) {
-                    return function() { window.open(url, "_blank"); };
-                })(channel.url);
-                // Soporte para teclado (enter)
-                card.setAttribute("tabindex", "0");
-                card.onkeypress = (function(url) {
-                    return function(e) {
-                        if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
+                
+                // Comportamiento diferente según si es TELEFE (sameTab) o no
+                if (channel.sameTab === true) {
+                    // TELEFE: abre en la MISMA pestaña (evita el bloqueo de TV Bro)
+                    card.onclick = (function(url) {
+                        return function() { 
+                            window.location.href = url;
+                        };
+                    })(channel.url);
+                    
+                    // Soporte teclado para TELEFE
+                    card.onkeypress = (function(url) {
+                        return function(e) {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                window.location.href = url;
+                            }
+                        };
+                    })(channel.url);
+                } else {
+                    // Resto de canales: abre en pestaña NUEVA (comportamiento original)
+                    card.onclick = (function(url) {
+                        return function() { 
                             window.open(url, "_blank");
-                        }
-                    };
-                })(channel.url);
+                        };
+                    })(channel.url);
+                    
+                    // Soporte teclado para el resto
+                    card.onkeypress = (function(url) {
+                        return function(e) {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                window.open(url, "_blank");
+                            }
+                        };
+                    })(channel.url);
+                }
+                
+                card.setAttribute("tabindex", "0");
                 fragment.appendChild(card);
             }
             
-            // Limpiamos y agregamos todo de una sola vez
             grid.innerHTML = "";
             grid.appendChild(fragment);
         }
@@ -275,7 +282,7 @@
         // Ejecutar render
         renderChannels();
         
-        // Recargar si la página se queda congelada (timeout de seguridad)
+        // Timeout de seguridad por si algo falla
         setTimeout(() => {
             if (document.visibilityState === "visible" && grid.children.length === 0) {
                 renderChannels();
