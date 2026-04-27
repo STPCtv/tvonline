@@ -25,18 +25,18 @@ h1 {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 20px;
 }
 
 .card {
     background: rgba(20,20,20,0.85);
     border-radius: 20px;
-    padding: 30px 10px;
+    padding: 18px 6px;
     text-align: center;
     cursor: pointer;
     transition: 0.2s;
-    font-size: 18px;
+    font-size: 14px;
 }
 
 .card:focus, .card:hover {
@@ -106,16 +106,14 @@ h1 {
 <div class="grid" id="grid"></div>
 </div>
 
-<!-- BOTONES -->
 <div class="controls">
     <button onclick="toggleEditMode()">Editar</button>
     <button onclick="deleteMode()">Borrar</button>
 </div>
 
-<!-- Editor -->
 <div id="editor">
     <div class="editor-box">
-        <h2 id="editorTitle">Editar</h2>
+        <h2>Editar</h2>
         <input id="nameInput" placeholder="Nombre">
         <input id="urlInput" placeholder="URL">
         <br>
@@ -125,18 +123,65 @@ h1 {
 </div>
 
 <script>
-// 🔒 LINKS PROTEGIDOS
 const fixedLinks = [
     { name: "TV en vivo", url: "https://pelisjuanita.com/tv/" },
     { name: "Futbol", url: "https://futbollibretv.su/" },
-    { name: "Peliculas 1", url: "https://www.cinecalidad.rs/" },
-    { name: "Peliculas 2", url: "https://pelis24.blog/" },
-    { name: "Peliculas y Series", url: "https://gnula.life/archives/series" }
+    { name: "TV en vivo op.2", url: "https://www.cxtvenvivo.com/busqueda/?query=argentina" },
+    { name: "TELEFE", url: "https://mitelefe.com/telefe-en-vivo" },
+
+    { name: "CANAL 13", url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ" },
+    { name: "AMERICA", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW" },
+    { name: "TN", url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz" },
+    { name: "LA NACION+", url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u" },
+    { name: "CRONICA", url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW" },
+    { name: "A24", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0" },
+    { name: "C5N", url: "https://dots.bestleague.world/cvatt.html?get=QzVO" },
+    { name: "TV PUBLICA", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3" },
+    { name: "EL NUEVE", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5" },
+    { name: "CANAL 26", url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ" },
+    { name: "TYC SPORTS", url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ" },
+    { name: "DEPORT TV", url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE" },
+    { name: "ESPN", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA" },
+    { name: "ESPN PREMIUM", url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE" },
+    { name: "ESPN 2", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1" },
+    { name: "ESPN 3", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1" },
+    { name: "ESPN 4", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1" },
+    { name: "ESPN 5", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1" },
+    { name: "ESPN 6", url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1" },
+    { name: "ESPN 7", url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1" },
+    { name: "VOLVER", url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1" },
+    { name: "EL GOURMET", url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1" },
+    { name: "CARTOON NETWORK", url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=" },
+    { name: "NICKELODEON", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=" },
+    { name: "NICKELODEON JR.", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=" },
+    { name: "DISNEY JR.", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=" },
+    { name: "SPACE", url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1" },
+    { name: "DISCOVERY TURBO", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=" },
+    { name: "HBO PLUS", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1" },
+    { name: "CIUDAD MAGAZINE", url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1" },
+    { name: "HBO EXTREME", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1" },
+    { name: "CINE ARG", url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ" },
+    { name: "SONY", url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1" },
+    { name: "HBO 2", url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1" },
+    { name: "HBO FAMILY", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1" },
+    { name: "HBO", url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1" },
+    { name: "CINECANAL", url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1" },
+    { name: "TCM", url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1" },
+    { name: "LA RURAL", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=" },
+    { name: "HISTORY", url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1" },
+    { name: "HISTORY 2", url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1" },
+    { name: "WARNER", url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1" },
+    { name: "TNT SERIES", url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz" },
+    { name: "CINEMAX", url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==" },
+    { name: "DISCOVERY H&H", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1" },
+    { name: "DISCOVERY", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=" },
+    { name: "AXN", url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=" },
+    { name: "FX", url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==" },
+    { name: "ANIMAL PLANET", url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0" },
+    { name: "MTV", url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1" },
 ];
 
-// 🧩 LINKS EDITABLES
 let userLinks = JSON.parse(localStorage.getItem("links")) || [];
-
 const grid = document.getElementById("grid");
 
 let editMode = false;
@@ -146,16 +191,17 @@ let editIndex = null;
 function render() {
     grid.innerHTML = "";
 
-    // 🔒 render protegidos
     fixedLinks.forEach(link => {
         const div = document.createElement("div");
         div.className = "card locked";
         div.innerText = link.name;
-        div.onclick = () => location.href = link.url;
+        div.onclick = () => {
+            if (editMode || deleteModeActive) return;
+            window.open(link.url, "_blank");
+        };
         grid.appendChild(div);
     });
 
-    // 🧩 render editables
     userLinks.forEach((link, i) => {
         const div = document.createElement("div");
         div.className = "card";
@@ -164,19 +210,20 @@ function render() {
         div.onclick = () => {
             if (editMode) editLink(i);
             else if (deleteModeActive) deleteLink(i);
-            else location.href = link.url;
+            else window.open(link.url, "_blank");
         };
 
         grid.appendChild(div);
     });
 
-    // ➕ agregar
     const add = document.createElement("div");
     add.className = "card add-btn";
     add.innerText = "+ Agregar";
+    add.style.opacity = editMode ? "1" : "0.4";
 
     add.onclick = () => {
-        if (editMode) addLink();
+        if (!editMode) return;
+        addLink();
     };
 
     grid.appendChild(add);
@@ -186,25 +233,27 @@ function toggleEditMode() {
     editMode = !editMode;
     deleteModeActive = false;
     document.body.classList.toggle("editing", editMode);
+    render();
 }
 
 function deleteMode() {
     deleteModeActive = !deleteModeActive;
     editMode = false;
     document.body.classList.toggle("editing", deleteModeActive);
+    render();
 }
 
 function addLink() {
     editIndex = null;
-    document.getElementById("nameInput").value = "";
-    document.getElementById("urlInput").value = "";
+    nameInput.value = "";
+    urlInput.value = "";
     openEditor();
 }
 
 function editLink(i) {
     editIndex = i;
-    document.getElementById("nameInput").value = userLinks[i].name;
-    document.getElementById("urlInput").value = userLinks[i].url;
+    nameInput.value = userLinks[i].name;
+    urlInput.value = userLinks[i].url;
     openEditor();
 }
 
@@ -215,24 +264,20 @@ function deleteLink(i) {
 }
 
 function openEditor() {
-    document.getElementById("editor").style.display = "flex";
+    editor.style.display = "flex";
 }
 
 function closeEditor() {
-    document.getElementById("editor").style.display = "none";
+    editor.style.display = "none";
 }
 
 function saveEditor() {
     const name = nameInput.value.trim();
     const url = urlInput.value.trim();
-
     if (!name || !url) return;
 
-    if (editIndex === null) {
-        userLinks.push({ name, url });
-    } else {
-        userLinks[editIndex] = { name, url };
-    }
+    if (editIndex === null) userLinks.push({ name, url });
+    else userLinks[editIndex] = { name, url };
 
     save();
     closeEditor();
