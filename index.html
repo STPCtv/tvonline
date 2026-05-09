@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
-        /* RESET EXTREMADAMENTE LIGERO - SIN ANIMACIONES NI EFECTOS PESADOS */
+        /* RESET EXTREMADAMENTE LIGERO - SIN ANIMACIONES, SIN TRANSICIONES, SIN FILTROS */
         * {
             margin: 0;
             padding: 0;
@@ -27,7 +27,7 @@
             color: white;
         }
         
-        /* Fondo con imagen optimizada (sin repaints) */
+        /* Fijo sin repaints pesados */
         body::before {
             content: "";
             position: fixed;
@@ -42,14 +42,13 @@
             pointer-events: none;
         }
         
-        /* Overlay simple sin blur */
         .overlay {
             background: rgba(0, 0, 0, 0.75);
             min-height: 100vh;
             padding: 20px 20px 40px 20px;
         }
         
-        /* Título simple */
+        /* Título simple sin efectos */
         h1 {
             text-align: center;
             font-size: 1.8rem;
@@ -67,7 +66,28 @@
             color: #ff9800;
         }
         
-        /* Grid optimizado para TV - sin transformaciones innecesarias */
+        /* Botón volver - sin transiciones pesadas */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #1e2a3a;
+            color: #ffaa33;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        
+        .back-button:hover {
+            background: #2a3a4a;
+            color: #ffcc66;
+        }
+        
+        /* Grid sin transformaciones */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -77,7 +97,7 @@
             margin: 0 auto;
         }
         
-        /* Tarjetas - SIN TRANSICIONES, SIN ANIMACIONES, SIN BACKDROP-FILTER */
+        /* Tarjetas - ABSOLUTAMENTE SIN TRANSICIONES NI ANIMACIONES */
         .card {
             background: #1a1a2e;
             border-radius: 16px;
@@ -92,10 +112,8 @@
             flex-direction: column;
             align-items: center;
             gap: 10px;
-            transition: none;
         }
         
-        /* Iconos simples */
         .card i {
             font-size: 34px;
             color: #ffaa33;
@@ -107,13 +125,12 @@
             word-break: break-word;
         }
         
-        /* Hover más simple posible - solo cambio de color */
+        /* Hover simple - solo cambio de color sólido */
         .card:hover {
             background: #2a2a4e;
             border-color: #ffaa33;
         }
         
-        /* Focus para control remoto */
         .card:focus-visible {
             outline: 3px solid #ff9800;
             outline-offset: 2px;
@@ -121,7 +138,6 @@
             border-color: #ff9800;
         }
         
-        /* Estrella fija para todos los canales */
         .locked {
             position: relative;
         }
@@ -136,7 +152,7 @@
             z-index: 1;
         }
         
-        /* Scroll simple */
+        /* Scroll básico */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -151,7 +167,6 @@
             border-radius: 3px;
         }
         
-        /* Responsive TV grande */
         @media (min-width: 1400px) {
             .grid {
                 grid-template-columns: repeat(8, minmax(135px, 1fr));
@@ -182,38 +197,43 @@
             h1 {
                 font-size: 1.4rem;
             }
+            .back-button {
+                padding: 6px 16px;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="overlay">
-        <h1>
-            <i class="fas fa-tv"></i> 
-            MENU STPC TV 
-            <i class="fas fa-satellite-dish"></i>
-        </h1>
+        <div id="dynamic-header">
+            <h1>
+                <i class="fas fa-tv"></i> 
+                MENU STPC TV 
+                <i class="fas fa-satellite-dish"></i>
+            </h1>
+        </div>
+        <div id="back-button-container" style="min-height: 52px;"></div>
         <div class="grid" id="grid"></div>
     </div>
 
     <script>
-        // ========== LIMPIEZA RÁPIDA DE CACHÉ ==========
+        // ========== LIMPIEZA DE CACHÉ (RÁPIDA) ==========
         (function() {
-            // Limpiar cookies
-            document.cookie.split(";").forEach(function(c) {
-                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-            });
-            // Recargar si viene de caché
+            try {
+                document.cookie.split(";").forEach(function(c) {
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                });
+            } catch(e) {}
             window.addEventListener('pageshow', function(event) {
-                if (event.persisted) {
-                    window.location.reload();
-                }
+                if (event.persisted) window.location.reload();
             });
         })();
         
-        // ========== LISTA DE CANALES ==========
-        const channels = [
+        // ========== LISTA DE CANALES PRINCIPAL (SIN MODIFICAR) ==========
+        var channels = [
             { name: "TV EN VIVO", url: "https://pelisjuanita.com/tv/", icon: "fas fa-play-circle" },
-            { name: "FUTBOL", url: "https://futbollibretv.su/", icon: "fas fa-futbol" },
+            { name: "FUTBOL", url: "", icon: "fas fa-futbol", isTrigger: 1 },
             { name: "TV OP.2", url: "https://www.cxtvenvivo.com/busqueda/?query=argentina", icon: "fas fa-search" },
             { name: "TELEFE", url: "https://pelisjuanita.com/tv/telefe", icon: "fas fa-tower-broadcast" },
             { name: "CANAL 13", url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ", icon: "fas fa-chalkboard-user" },
@@ -268,9 +288,20 @@
             { name: "MTV", url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1", icon: "fas fa-music" }
         ];
         
-        // Función simple para obtener icono por defecto si falta
+        // ========== OPCIONES DE FÚTBOL (7 ENLACES) ==========
+        var footballOptions = [
+            { name: "⚽ Fútbol Opción 1", url: "https://alangulotv2.pl/", icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 2", url: "https://rojadirectaplay.com/", icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 3", url: "https://futbol-libre.su/", icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 4", url: "https://pelotalibretv.su/", icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 5", url: "https://pirlotv3.pl/index2.php", icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 6", url: "https://www.pelisjuanita.com/tv/agenda-deportiva", icon: "fas fa-calendar-alt" },
+            { name: "⚽ Fútbol Opción 7", url: "https://www.fctv33hd.pics/es", icon: "fas fa-tv" }
+        ];
+        
+        // Función para asignar icono por defecto (rápida)
         function getDefaultIcon(name) {
-            const n = name.toUpperCase();
+            var n = name.toUpperCase();
             if (n.includes("FUTBOL") || n.includes("SPORT") || n.includes("ESPN") || n.includes("DEPORT")) return "fas fa-futbol";
             if (n.includes("PELI") || n.includes("CINE")) return "fas fa-film";
             if (n.includes("NOTICIA") || n.includes("TN") || n.includes("CRONICA") || n.includes("A24") || n.includes("C5N")) return "fas fa-newspaper";
@@ -282,47 +313,141 @@
             return "fas fa-tv";
         }
         
-        // Preparar canales con iconos
-        for (let i = 0; i < channels.length; i++) {
+        // Asignar iconos faltantes en canales principales
+        for (var i = 0; i < channels.length; i++) {
             if (!channels[i].icon || channels[i].icon === "") {
                 channels[i].icon = getDefaultIcon(channels[i].name);
             }
         }
         
-        const grid = document.getElementById("grid");
+        // Elementos DOM
+        var gridEl = document.getElementById("grid");
+        var backContainer = document.getElementById("back-button-container");
+        var headerDiv = document.getElementById("dynamic-header");
         
-        // Renderizado ultra rápido - sin closures innecesarias
-        function render() {
-            let html = '';
-            for (let i = 0; i < channels.length; i++) {
-                const ch = channels[i];
-                const iconClass = ch.icon;
-                html += `
-                    <div class="card locked" data-url="${ch.url}" tabindex="0">
-                        <i class="${iconClass}"></i>
-                        <span>${ch.name}</span>
-                    </div>
-                `;
+        // Estado: "main" o "football"
+        var currentMode = "main";
+        
+        // Variable para almacenar el botón volver (reutilizable)
+        var backButton = null;
+        
+        // ========== RENDER PRINCIPAL (SIN DELEGACIÓN, EVENTOS DIRECTOS) ==========
+        function renderMain() {
+            var html = [];
+            for (var i = 0; i < channels.length; i++) {
+                var ch = channels[i];
+                var isTriggerAttr = ch.isTrigger ? 'data-trigger="1"' : '';
+                html.push('<div class="card locked" data-url="' + (ch.url || '') + '" ' + isTriggerAttr + ' data-name="' + ch.name + '">');
+                html.push('<i class="' + ch.icon + '"></i>');
+                html.push('<span>' + ch.name + '</span>');
+                html.push('</div>');
             }
-            grid.innerHTML = html;
+            gridEl.innerHTML = html.join('');
             
-            // Asignar eventos de forma eficiente (delegación)
-            const cards = document.querySelectorAll('.card');
-            for (let i = 0; i < cards.length; i++) {
-                const card = cards[i];
-                const url = card.dataset.url;
-                card.onclick = function() { window.open(url, "_blank"); };
-                card.onkeypress = function(e) {
-                    if (e.key === "Enter" || e.key === " ") {
+            // Asignar eventos DIRECTOS (más rápido que delegación en TVs lentos)
+            var cards = gridEl.children;
+            for (var i = 0; i < cards.length; i++) {
+                var card = cards[i];
+                var isTrigger = card.getAttribute('data-trigger') === '1';
+                var url = card.getAttribute('data-url');
+                
+                if (isTrigger) {
+                    card.onclick = function(e) {
                         e.preventDefault();
-                        window.open(url, "_blank");
+                        showFootball();
+                    };
+                    card.onkeypress = function(e) {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            showFootball();
+                        }
+                    };
+                } else {
+                    if (url && url !== "") {
+                        card.onclick = (function(u) { return function() { window.open(u, "_blank"); }; })(url);
+                        card.onkeypress = (function(u) { return function(e) {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                window.open(u, "_blank");
+                            }
+                        }; })(url);
                     }
-                };
+                }
             }
         }
         
-        render();
-        console.log("✅ MENU STPC TV optimizado - " + channels.length + " canales cargados");
+        // ========== RENDER SUBMENÚ FÚTBOL ==========
+        function renderFootball() {
+            var html = [];
+            for (var i = 0; i < footballOptions.length; i++) {
+                var opt = footballOptions[i];
+                html.push('<div class="card locked" data-url="' + opt.url + '">');
+                html.push('<i class="' + opt.icon + '"></i>');
+                html.push('<span>' + opt.name + '</span>');
+                html.push('</div>');
+            }
+            gridEl.innerHTML = html.join('');
+            
+            // Asignar eventos a cada opción de fútbol
+            var cards = gridEl.children;
+            for (var i = 0; i < cards.length; i++) {
+                var card = cards[i];
+                var url = card.getAttribute('data-url');
+                if (url) {
+                    card.onclick = (function(u) { return function() { window.open(u, "_blank"); }; })(url);
+                    card.onkeypress = (function(u) { return function(e) {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            window.open(u, "_blank");
+                        }
+                    }; })(url);
+                }
+            }
+        }
+        
+        // ========== MOSTRAR SUBMENÚ FÚTBOL ==========
+        function showFootball() {
+            if (currentMode === "football") return;
+            currentMode = "football";
+            
+            // Cambiar título
+            headerDiv.innerHTML = '<h1><i class="fas fa-futbol"></i> MENU FUTBOL - OPCIONES <i class="fas fa-tv"></i></h1>';
+            
+            // Crear botón volver si no existe
+            backContainer.innerHTML = '<button class="back-button" id="btn-back-main"><i class="fas fa-arrow-left"></i> Volver al menú principal</button>';
+            var btn = document.getElementById("btn-back-main");
+            if (btn) {
+                btn.onclick = function() { goToMain(); };
+            }
+            
+            renderFootball();
+        }
+        
+        // ========== VOLVER AL MENÚ PRINCIPAL ==========
+        function goToMain() {
+            if (currentMode === "main") return;
+            currentMode = "main";
+            
+            // Restaurar título original
+            headerDiv.innerHTML = '<h1><i class="fas fa-tv"></i> MENU STPC TV <i class="fas fa-satellite-dish"></i></h1>';
+            
+            // Limpiar contenedor del botón volver
+            backContainer.innerHTML = '';
+            
+            renderMain();
+        }
+        
+        // ========== INICIALIZAR ==========
+        function init() {
+            renderMain();
+            currentMode = "main";
+            backContainer.innerHTML = '';
+        }
+        
+        init();
+        
+        // Pequeño log para consola (no afecta rendimiento en TV)
+        if (window.console) console.log("MENU STPC TV + Submenú Fútbol - Modo ultra rápido para TV");
     </script>
 </body>
 </html>
