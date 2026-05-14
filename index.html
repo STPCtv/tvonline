@@ -4,51 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>MENU STPC TV - Canales en vivo</title>
-    
-    <!-- Meta tags anti-caché -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    
-    <!-- Font Awesome 6 (CDN rápido) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+
+    <!-- HLS.js para streams m3u8 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
+    <!-- dash.js para streams mpd -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.7.0/dash.all.min.js"></script>
+
     <style>
-        /* RESET EXTREMADAMENTE LIGERO - SIN ANIMACIONES, SIN TRANSICIONES, SIN FILTROS */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             background: #0a0a0a;
             font-family: 'Segoe UI', Roboto, Arial, sans-serif;
             color: white;
         }
-        
-        /* Fijo sin repaints pesados */
+
         body::before {
             content: "";
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: url("fondo.jpg") no-repeat center center fixed;
             background-size: cover;
             opacity: 0.6;
             z-index: -1;
             pointer-events: none;
         }
-        
+
         .overlay {
             background: rgba(0, 0, 0, 0.75);
             min-height: 100vh;
             padding: 20px 20px 40px 20px;
         }
-        
-        /* Título simple sin efectos */
+
         h1 {
             text-align: center;
             font-size: 1.8rem;
@@ -60,13 +52,9 @@
             gap: 12px;
             flex-wrap: wrap;
         }
-        
-        h1 i {
-            font-size: 2rem;
-            color: #ff9800;
-        }
-        
-        /* Botón volver - sin transiciones pesadas */
+
+        h1 i { font-size: 2rem; color: #ff9800; }
+
         .back-button {
             display: inline-flex;
             align-items: center;
@@ -81,13 +69,8 @@
             cursor: pointer;
             margin-bottom: 20px;
         }
-        
-        .back-button:hover {
-            background: #2a3a4a;
-            color: #ffcc66;
-        }
-        
-        /* Grid sin transformaciones */
+        .back-button:hover { background: #2a3a4a; color: #ffcc66; }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -96,8 +79,7 @@
             max-width: 1600px;
             margin: 0 auto;
         }
-        
-        /* Tarjetas - ABSOLUTAMENTE SIN TRANSICIONES NI ANIMACIONES */
+
         .card {
             background: #1a1a2e;
             border-radius: 16px;
@@ -106,119 +88,246 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 13px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
         }
-        
-        .card i {
-            font-size: 34px;
-            color: #ffaa33;
-        }
-        
-        .card span {
-            display: block;
-            font-weight: 600;
-            word-break: break-word;
-        }
-        
-        /* Hover simple - solo cambio de color sólido */
-        .card:hover {
-            background: #2a2a4e;
-            border-color: #ffaa33;
-        }
-        
-        .card:focus-visible {
-            outline: 3px solid #ff9800;
-            outline-offset: 2px;
-            background: #2a2a4e;
-            border-color: #ff9800;
-        }
-        
-        .locked {
-            position: relative;
-        }
-        
+        .card i { font-size: 34px; color: #ffaa33; }
+        .card span { display: block; font-weight: 600; word-break: break-word; }
+        .card:hover { background: #2a2a4e; border-color: #ffaa33; }
+        .card:focus-visible { outline: 3px solid #ff9800; outline-offset: 2px; background: #2a2a4e; border-color: #ff9800; }
+
+        .locked { position: relative; }
         .locked::before {
             content: "★";
             position: absolute;
-            top: 6px;
-            left: 10px;
+            top: 6px; left: 10px;
             font-size: 12px;
             color: #ffcc00;
             z-index: 1;
         }
-        
-        /* Scroll básico */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+
+        /* ===== MODAL DE OPCIONES ===== */
+        #modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
         }
-        
-        ::-webkit-scrollbar-track {
-            background: #1e1e1e;
+        #modal-overlay.visible { display: flex; }
+
+        #modal-box {
+            background: #1a1a2e;
+            border: 2px solid #ff9800;
+            border-radius: 20px;
+            padding: 28px 24px;
+            max-width: 420px;
+            width: 92%;
+            text-align: center;
         }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #ff9800;
-            border-radius: 3px;
+
+        #modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffaa33;
+            margin-bottom: 8px;
         }
-        
+
+        #modal-subtitle {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 22px;
+        }
+
+        .modal-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            background: #12122a;
+            border: 1.5px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            padding: 14px 18px;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .modal-btn i { font-size: 1.6rem; color: #ffaa33; min-width: 30px; }
+        .modal-btn:hover { background: #2a2a4e; border-color: #ffaa33; }
+        .modal-btn small { display: block; font-size: 0.72rem; color: #aaa; font-weight: 400; margin-top: 2px; }
+
+        .modal-cancel {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-top: 6px;
+            padding: 6px 16px;
+        }
+        .modal-cancel:hover { color: #ccc; }
+
+        /* ===== REPRODUCTOR INLINE ===== */
+        #player-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 200;
+            flex-direction: column;
+        }
+        #player-overlay.visible { display: flex; }
+
+        #player-topbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.7);
+            flex-shrink: 0;
+        }
+
+        #player-channel-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffaa33;
+            flex: 1;
+        }
+
+        #btn-close-player {
+            background: #cc3300;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #btn-close-player:hover { background: #ff4400; }
+
+        #player-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        #main-video {
+            width: 100%;
+            height: 100%;
+            max-height: calc(100vh - 60px);
+            background: #000;
+            outline: none;
+        }
+
+        #player-status {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.75);
+            color: #ffaa33;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background: #ff9800; border-radius: 3px; }
+
         @media (min-width: 1400px) {
-            .grid {
-                grid-template-columns: repeat(8, minmax(135px, 1fr));
-                gap: 14px;
-            }
-            .card i {
-                font-size: 38px;
-            }
-            .card span {
-                font-size: 14px;
-            }
+            .grid { grid-template-columns: repeat(8, minmax(135px, 1fr)); gap: 14px; }
+            .card i { font-size: 38px; }
+            .card span { font-size: 14px; }
         }
-        
         @media (max-width: 900px) {
-            .grid {
-                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-                gap: 10px;
-            }
-            .card {
-                padding: 10px 4px;
-            }
-            .card i {
-                font-size: 26px;
-            }
-            .card span {
-                font-size: 11px;
-            }
-            h1 {
-                font-size: 1.4rem;
-            }
-            .back-button {
-                padding: 6px 16px;
-                font-size: 0.8rem;
-            }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+            .card { padding: 10px 4px; }
+            .card i { font-size: 26px; }
+            .card span { font-size: 11px; }
+            h1 { font-size: 1.4rem; }
+            .back-button { padding: 6px 16px; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
     <div class="overlay">
         <div id="dynamic-header">
-            <h1>
-                <i class="fas fa-tv"></i> 
-                MENU STPC TV 
-                <i class="fas fa-satellite-dish"></i>
-            </h1>
+            <h1><i class="fas fa-tv"></i> MENU STPC TV <i class="fas fa-satellite-dish"></i></h1>
         </div>
-        <div id="back-button-container" style="min-height: 52px;"></div>
+        <div id="back-button-container" style="min-height:52px;"></div>
         <div class="grid" id="grid"></div>
     </div>
 
+    <!-- MODAL: elegir cómo abrir -->
+    <div id="modal-overlay">
+        <div id="modal-box">
+            <div id="modal-title"></div>
+            <div id="modal-subtitle"></div>
+            <button class="modal-btn" id="btn-inline">
+                <i class="fas fa-play-circle"></i>
+                <div>
+                    Reproducir aquí
+                    <small>Reproductor embebido en esta página</small>
+                </div>
+            </button>
+            <button class="modal-btn" id="btn-mxplayer">
+                <i class="fas fa-mobile-alt"></i>
+                <div>
+                    Abrir en MX Player
+                    <small>Lanza la app instalada en tu TV Box</small>
+                </div>
+            </button>
+            <button class="modal-btn" id="btn-vlc">
+                <i class="fas fa-play-circle"></i>
+                <div>
+                    Abrir en VLC
+                    <small>Alternativa gratuita a MX Player</small>
+                </div>
+            </button>
+            <button class="modal-btn" id="btn-browser">
+                <i class="fas fa-globe"></i>
+                <div>
+                    Abrir en browser
+                    <small>Misma pestaña, sin acumular tabs</small>
+                </div>
+            </button>
+            <button class="modal-cancel" id="btn-cancel-modal">✕ Cancelar</button>
+        </div>
+    </div>
+
+    <!-- REPRODUCTOR INLINE -->
+    <div id="player-overlay">
+        <div id="player-topbar">
+            <i class="fas fa-satellite-dish" style="color:#ffaa33;font-size:1.2rem;"></i>
+            <span id="player-channel-name">Canal</span>
+            <button id="btn-close-player"><i class="fas fa-times"></i> CERRAR</button>
+        </div>
+        <div id="player-wrap">
+            <video id="main-video" controls autoplay playsinline></video>
+            <div id="player-status"></div>
+        </div>
+    </div>
+
     <script>
-        // ========== LIMPIEZA DE CACHÉ (RÁPIDA) ==========
+        // ===== LIMPIEZA DE CACHÉ =====
         (function() {
             try {
                 document.cookie.split(";").forEach(function(c) {
@@ -229,225 +338,337 @@
                 if (event.persisted) window.location.reload();
             });
         })();
-        
-        // ========== LISTA DE CANALES PRINCIPAL (SIN MODIFICAR) ==========
+
+        // ===== CANALES PRINCIPALES =====
         var channels = [
-            { name: "TV EN VIVO", url: "https://pelisjuanita.com/tv/", icon: "fas fa-play-circle" },
-            { name: "FUTBOL", url: "", icon: "fas fa-futbol", isTrigger: 1 },
-            { name: "TV OP.2", url: "https://www.cxtvenvivo.com/busqueda/?query=argentina", icon: "fas fa-search" },
-            { name: "TELEFE", url: "https://pelisjuanita.com/tv/telefe", icon: "fas fa-tower-broadcast" },
-            { name: "CANAL 13", url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ", icon: "fas fa-chalkboard-user" },
-            { name: "AMERICA", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW", icon: "fas fa-globe-americas" },
-            { name: "TN", url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz", icon: "fas fa-newspaper" },
-            { name: "LA NACION+", url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u", icon: "fas fa-landmark" },
-            { name: "CRONICA", url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW", icon: "fas fa-clock" },
-            { name: "A24", url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0", icon: "fas fa-microphone-alt" },
-            { name: "C5N", url: "https://dots.bestleague.world/cvatt.html?get=QzVO", icon: "fas fa-chart-line" },
-            { name: "TV PUBLICA", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3", icon: "fas fa-university" },
-            { name: "EL NUEVE", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5", icon: "fas fa-hashtag" },
-            { name: "CANAL 26", url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ", icon: "fas fa-broadcast-tower" },
-            { name: "TYC SPORTS", url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ", icon: "fas fa-medal" },
-            { name: "DEPORT TV", url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE", icon: "fas fa-running" },
-            { name: "ESPN", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA", icon: "fab fa-js" },
-            { name: "ESPN PREMIUM", url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", icon: "fas fa-crown" },
-            { name: "ESPN 2", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1", icon: "fas fa-2" },
-            { name: "ESPN 3", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1", icon: "fas fa-3" },
-            { name: "ESPN 4", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1", icon: "fas fa-4" },
-            { name: "ESPN 5", url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1", icon: "fas fa-5" },
-            { name: "ESPN 6", url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", icon: "fas fa-6" },
-            { name: "ESPN 7", url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", icon: "fas fa-7" },
-            { name: "VOLVER", url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1", icon: "fas fa-film" },
-            { name: "EL GOURMET", url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1", icon: "fas fa-utensils" },
-            { name: "CARTOON NETW", url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=", icon: "fas fa-bug" },
-            { name: "NICKELODEON", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=", icon: "fas fa-smile" },
-            { name: "NICK JR", url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=", icon: "fas fa-baby" },
-            { name: "DISNEY JR", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=", icon: "fas fa-mickey" },
-            { name: "SPACE", url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1", icon: "fas fa-rocket" },
-            { name: "DISCOVERY TV", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=", icon: "fas fa-microscope" },
-            { name: "HBO PLUS", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1", icon: "fas fa-plus-circle" },
-            { name: "CDAD MAG", url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1", icon: "fas fa-magic" },
-            { name: "HBO EXTREME", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1", icon: "fas fa-fire" },
-            { name: "CINE ARG", url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ", icon: "fas fa-clapperboard" },
-            { name: "SONY", url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1", icon: "fab fa-sony" },
-            { name: "HBO 2", url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1", icon: "fas fa-2" },
-            { name: "HBO FAMILY", url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1", icon: "fas fa-users" },
-            { name: "HBO", url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1", icon: "fas fa-crown" },
-            { name: "CINECANAL", url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1", icon: "fas fa-video" },
-            { name: "TCM", url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1", icon: "fas fa-film" },
-            { name: "LA RURAL", url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=", icon: "fas fa-tree" },
-            { name: "HISTORY", url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1", icon: "fas fa-landmark" },
-            { name: "HISTORY 2", url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1", icon: "fas fa-book" },
-            { name: "WARNER", url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1", icon: "fab fa-waze" },
-            { name: "TNT SERIES", url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz", icon: "fas fa-tv" },
-            { name: "CINEMAX", url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==", icon: "fas fa-camera-movie" },
-            { name: "DISCOVERY H&H", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", icon: "fas fa-home" },
-            { name: "DISCOVERY", url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=", icon: "fas fa-globe" },
-            { name: "AXN", url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=", icon: "fas fa-bolt" },
-            { name: "FX", url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==", icon: "fas fa-skull" },
-            { name: "ANIMAL PLANET", url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0", icon: "fas fa-paw" },
-            { name: "MTV", url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1", icon: "fas fa-music" }
+            { name: "TV EN VIVO",     url: "https://pelisjuanita.com/tv/",                                          icon: "fas fa-play-circle" },
+            { name: "FUTBOL",         url: "",                                                                        icon: "fas fa-futbol",             isTrigger: 1 },
+            { name: "TV OP.2",        url: "https://www.cxtvenvivo.com/busqueda/?query=argentina",                   icon: "fas fa-search" },
+            { name: "TELEFE",         url: "https://pelisjuanita.com/tv/telefe",                                     icon: "fas fa-broadcast-tower" },
+            { name: "CANAL 13",       url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ",               icon: "fas fa-chalkboard" },
+            { name: "AMERICA",        url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW",              icon: "fas fa-globe-americas" },
+            { name: "TN",             url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz",          icon: "fas fa-newspaper" },
+            { name: "LA NACION+",     url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u",             icon: "fas fa-landmark" },
+            { name: "CRONICA",        url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW",             icon: "fas fa-clock" },
+            { name: "A24",            url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0",             icon: "fas fa-microphone-alt" },
+            { name: "C5N",            url: "https://dots.bestleague.world/cvatt.html?get=QzVO",                      icon: "fas fa-chart-line" },
+            { name: "TV PUBLICA",     url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3",                  icon: "fas fa-university" },
+            { name: "EL NUEVE",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5",                  icon: "fas fa-hashtag" },
+            { name: "CANAL 26",       url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ",              icon: "fas fa-broadcast-tower" },
+            { name: "TYC SPORTS",     url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ",              icon: "fas fa-medal" },
+            { name: "DEPORT TV",      url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE",             icon: "fas fa-running" },
+            { name: "ESPN",           url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA",               icon: "fab fa-js" },
+            { name: "ESPN PREMIUM",   url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", icon: "fas fa-crown" },
+            { name: "ESPN 2",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1",     icon: "fas fa-signal" },
+            { name: "ESPN 3",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1",           icon: "fas fa-satellite" },
+            { name: "ESPN 4",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1",          icon: "fas fa-wifi" },
+            { name: "ESPN 5",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1",          icon: "fas fa-star" },
+            { name: "ESPN 6",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", icon: "fas fa-flag" },
+            { name: "ESPN 7",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", icon: "fas fa-stopwatch" },
+            { name: "VOLVER",         url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1",          icon: "fas fa-film" },
+            { name: "EL GOURMET",     url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1",      icon: "fas fa-utensils" },
+            { name: "CARTOON NETW",   url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=",    icon: "fas fa-bug" },
+            { name: "NICKELODEON",    url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",         icon: "fas fa-smile" },
+            { name: "NICK JR",        url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",         icon: "fas fa-baby" },
+            { name: "DISNEY JR",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=",    icon: "fas fa-dragon" },
+            { name: "SPACE",          url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1",          icon: "fas fa-rocket" },
+            { name: "DISCOVERY TV",   url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=",    icon: "fas fa-microscope" },
+            { name: "HBO PLUS",       url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1",      icon: "fas fa-plus-circle" },
+            { name: "CDAD MAG",       url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1",      icon: "fas fa-magic" },
+            { name: "HBO EXTREME",    url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1", icon: "fas fa-fire" },
+            { name: "CINE ARG",       url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ",       icon: "fas fa-film" },
+            { name: "SONY",           url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1",          icon: "fas fa-tv" },
+            { name: "HBO 2",          url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1",          icon: "fas fa-circle" },
+            { name: "HBO FAMILY",     url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1", icon: "fas fa-users" },
+            { name: "HBO",            url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1",          icon: "fas fa-crown" },
+            { name: "CINECANAL",      url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1", icon: "fas fa-video" },
+            { name: "TCM",            url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1",              icon: "fas fa-film" },
+            { name: "LA RURAL",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=",        icon: "fas fa-tree" },
+            { name: "HISTORY",        url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1",     icon: "fas fa-landmark" },
+            { name: "HISTORY 2",      url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1",     icon: "fas fa-book" },
+            { name: "WARNER",         url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1",     icon: "fas fa-ticket-alt" },
+            { name: "TNT SERIES",     url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz",            icon: "fas fa-tv" },
+            { name: "CINEMAX",        url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==",            icon: "fas fa-camera" },
+            { name: "DISCOVERY H&H",  url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", icon: "fas fa-home" },
+            { name: "DISCOVERY",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=",        icon: "fas fa-globe" },
+            { name: "AXN",            url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=",                icon: "fas fa-bolt" },
+            { name: "FX",             url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==",                icon: "fas fa-skull" },
+            { name: "ANIMAL PLANET",  url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0",       icon: "fas fa-paw" },
+            { name: "MTV",            url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1",         icon: "fas fa-music" }
         ];
-        
-        // ========== OPCIONES DE FÚTBOL (7 ENLACES) ==========
+
+        // ===== FÚTBOL =====
         var footballOptions = [
-            { name: "⚽ Fútbol Opción 1", url: "https://alangulotv2.pl/", icon: "fas fa-futbol" },
-            { name: "⚽ Fútbol Opción 2", url: "https://rojadirectaplay.com/", icon: "fas fa-futbol" },
-            { name: "⚽ Fútbol Opción 3", url: "https://futbol-libre.su/", icon: "fas fa-futbol" },
-            { name: "⚽ Fútbol Opción 4", url: "https://pelotalibretv.su/", icon: "fas fa-futbol" },
-            { name: "⚽ Fútbol Opción 5", url: "https://pirlotv3.pl/index2.php", icon: "fas fa-futbol" },
-            { name: "⚽ Fútbol Opción 6", url: "https://www.pelisjuanita.com/tv/agenda-deportiva", icon: "fas fa-calendar-alt" },
-            { name: "⚽ Fútbol Opción 7", url: "https://www.fctv33hd.pics/es", icon: "fas fa-tv" }
+            { name: "⚽ Fútbol Opción 1", url: "https://alangulotv2.pl/",                              icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 2", url: "https://rojadirectaplay.com/",                         icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 3", url: "https://futbol-libre.su/",                             icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 4", url: "https://pelotalibretv.su/",                            icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 5", url: "https://pirlotv3.pl/index2.php",                       icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 6", url: "https://www.pelisjuanita.com/tv/agenda-deportiva",     icon: "fas fa-calendar-alt" },
+            { name: "⚽ Fútbol Opción 7", url: "https://www.fctv33hd.pics/es",                         icon: "fas fa-tv" }
         ];
-        
-        // Función para asignar icono por defecto (rápida)
-        function getDefaultIcon(name) {
-            var n = name.toUpperCase();
-            if (n.includes("FUTBOL") || n.includes("SPORT") || n.includes("ESPN") || n.includes("DEPORT")) return "fas fa-futbol";
-            if (n.includes("PELI") || n.includes("CINE")) return "fas fa-film";
-            if (n.includes("NOTICIA") || n.includes("TN") || n.includes("CRONICA") || n.includes("A24") || n.includes("C5N")) return "fas fa-newspaper";
-            if (n.includes("NICK") || n.includes("DISNEY") || n.includes("CARTOON")) return "fas fa-child";
-            if (n.includes("MUSIC") || n.includes("MTV")) return "fas fa-music";
-            if (n.includes("HISTORY")) return "fas fa-landmark";
-            if (n.includes("GOURMET")) return "fas fa-utensils";
-            if (n.includes("ANIMAL")) return "fas fa-paw";
-            return "fas fa-tv";
+
+        // ===== DETECCIÓN DE TIPO DE URL =====
+        function detectUrlType(url) {
+            if (!url) return "none";
+            var u = url.toLowerCase().split("?")[0];
+            if (u.endsWith(".m3u8") || u.includes(".m3u8"))  return "hls";
+            if (u.endsWith(".mpd")  || u.includes(".mpd"))   return "dash";
+            if (u.endsWith(".m3u"))                          return "m3u";
+            return "web";
         }
-        
-        // Asignar iconos faltantes en canales principales
-        for (var i = 0; i < channels.length; i++) {
-            if (!channels[i].icon || channels[i].icon === "") {
-                channels[i].icon = getDefaultIcon(channels[i].name);
+
+        // ===== INTENT URLS PARA APPS EXTERNAS =====
+        function buildMxIntent(url, title) {
+            // MX Player Pro y free tienen distintos packages, intentamos ambos
+            return "intent://" + url.replace(/^https?:\/\//, "") +
+                "#Intent;action=android.intent.action.VIEW;" +
+                "type=video/mp4;" +
+                "package=com.mxtech.videoplayer.pro;" +
+                "S.title=" + encodeURIComponent(title || "") + ";" +
+                "end";
+        }
+
+        function buildVlcIntent(url) {
+            return "intent://" + url.replace(/^https?:\/\//, "") +
+                "#Intent;action=android.intent.action.VIEW;" +
+                "type=video/mp4;" +
+                "package=org.videolan.vlc;" +
+                "end";
+        }
+
+        // ===== ESTADO =====
+        var currentMode   = "main";
+        var currentUrl    = "";
+        var currentName   = "";
+        var hlsInstance   = null;
+        var dashInstance  = null;
+
+        // ===== ELEMENTOS DOM =====
+        var gridEl          = document.getElementById("grid");
+        var backContainer   = document.getElementById("back-button-container");
+        var headerDiv       = document.getElementById("dynamic-header");
+
+        var modalOverlay    = document.getElementById("modal-overlay");
+        var modalTitle      = document.getElementById("modal-title");
+        var modalSubtitle   = document.getElementById("modal-subtitle");
+        var btnInline       = document.getElementById("btn-inline");
+        var btnMxPlayer     = document.getElementById("btn-mxplayer");
+        var btnVlc          = document.getElementById("btn-vlc");
+        var btnBrowser      = document.getElementById("btn-browser");
+        var btnCancelModal  = document.getElementById("btn-cancel-modal");
+
+        var playerOverlay   = document.getElementById("player-overlay");
+        var playerChannelNm = document.getElementById("player-channel-name");
+        var mainVideo       = document.getElementById("main-video");
+        var playerStatus    = document.getElementById("player-status");
+        var btnClosePlayer  = document.getElementById("btn-close-player");
+
+        // ===== MODAL: mostrar y configurar según tipo =====
+        function showModal(url, name) {
+            currentUrl  = url;
+            currentName = name;
+            var type    = detectUrlType(url);
+
+            modalTitle.textContent    = name;
+            modalSubtitle.textContent = type === "hls"  ? "Stream HLS (m3u8)" :
+                                        type === "dash" ? "Stream DASH (mpd)" :
+                                        type === "m3u"  ? "Lista M3U"         :
+                                        "Sitio web externo";
+
+            // Mostrar/ocultar opción inline según tipo
+            btnInline.style.display    = (type === "hls" || type === "dash") ? "flex" : "none";
+            // Para web simple, mostrar solo browser; para streams, las tres opciones
+            btnMxPlayer.style.display  = (type === "hls" || type === "dash") ? "flex" : "none";
+            btnVlc.style.display       = (type === "hls" || type === "dash") ? "flex" : "none";
+            btnBrowser.style.display   = "flex";
+
+            modalOverlay.classList.add("visible");
+        }
+
+        function hideModal() {
+            modalOverlay.classList.remove("visible");
+        }
+
+        // ===== REPRODUCTOR INLINE =====
+        function destroyPlayers() {
+            if (hlsInstance)  { hlsInstance.destroy();  hlsInstance  = null; }
+            if (dashInstance) { dashInstance.reset();   dashInstance = null; }
+            mainVideo.src = "";
+            mainVideo.load();
+        }
+
+        function showStatus(msg) {
+            playerStatus.textContent = msg;
+            playerStatus.style.display = "block";
+            clearTimeout(showStatus._t);
+            showStatus._t = setTimeout(function() { playerStatus.style.display = "none"; }, 3000);
+        }
+
+        function openInline(url, name) {
+            destroyPlayers();
+            playerChannelNm.textContent = name;
+            playerOverlay.classList.add("visible");
+
+            var type = detectUrlType(url);
+
+            if (type === "hls") {
+                if (Hls.isSupported()) {
+                    hlsInstance = new Hls({ enableWorker: false, lowLatencyMode: true });
+                    hlsInstance.loadSource(url);
+                    hlsInstance.attachMedia(mainVideo);
+                    hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+                        mainVideo.play();
+                        showStatus("▶ Reproduciendo HLS");
+                    });
+                    hlsInstance.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) showStatus("⚠ Error de stream");
+                    });
+                } else if (mainVideo.canPlayType('application/vnd.apple.mpegurl')) {
+                    mainVideo.src = url;
+                    mainVideo.play();
+                } else {
+                    showStatus("⚠ HLS no soportado en este browser");
+                }
+            } else if (type === "dash") {
+                if (typeof dashjs !== "undefined") {
+                    dashInstance = dashjs.MediaPlayer().create();
+                    dashInstance.initialize(mainVideo, url, true);
+                    showStatus("▶ Reproduciendo DASH");
+                } else {
+                    showStatus("⚠ DASH no disponible");
+                }
+            } else {
+                mainVideo.src = url;
+                mainVideo.play();
             }
         }
-        
-        // Elementos DOM
-        var gridEl = document.getElementById("grid");
-        var backContainer = document.getElementById("back-button-container");
-        var headerDiv = document.getElementById("dynamic-header");
-        
-        // Estado: "main" o "football"
-        var currentMode = "main";
-        
-        // Variable para almacenar el botón volver (reutilizable)
-        var backButton = null;
-        
-        // ========== RENDER PRINCIPAL (SIN DELEGACIÓN, EVENTOS DIRECTOS) ==========
+
+        function closePlayer() {
+            destroyPlayers();
+            playerOverlay.classList.remove("visible");
+        }
+
+        // ===== EVENTOS DEL MODAL =====
+        btnInline.onclick = function() {
+            hideModal();
+            openInline(currentUrl, currentName);
+        };
+
+        btnMxPlayer.onclick = function() {
+            hideModal();
+            try {
+                window.location.href = buildMxIntent(currentUrl, currentName);
+            } catch(e) {
+                showStatus("MX Player no encontrado");
+            }
+        };
+
+        btnVlc.onclick = function() {
+            hideModal();
+            try {
+                window.location.href = buildVlcIntent(currentUrl);
+            } catch(e) {
+                showStatus("VLC no encontrado");
+            }
+        };
+
+        btnBrowser.onclick = function() {
+            hideModal();
+            // Misma tab — sin acumular pestañas
+            window.location.href = currentUrl;
+        };
+
+        btnCancelModal.onclick = hideModal;
+
+        // Cerrar modal tocando fuera
+        modalOverlay.onclick = function(e) {
+            if (e.target === modalOverlay) hideModal();
+        };
+
+        btnClosePlayer.onclick = closePlayer;
+
+        // ===== FUNCIÓN PARA MANEJAR CLICK EN CARD =====
+        function handleCardClick(url, name, isTrigger) {
+            if (isTrigger) { showFootball(); return; }
+            if (!url) return;
+            var type = detectUrlType(url);
+            if (type === "hls" || type === "dash") {
+                // Stream directo: mostrar modal con todas las opciones
+                showModal(url, name);
+            } else {
+                // Sitio web externo: ir directamente en la misma tab
+                window.location.href = url;
+            }
+        }
+
+        // ===== RENDER PRINCIPAL =====
         function renderMain() {
             var html = [];
             for (var i = 0; i < channels.length; i++) {
                 var ch = channels[i];
-                var isTriggerAttr = ch.isTrigger ? 'data-trigger="1"' : '';
-                html.push('<div class="card locked" data-url="' + (ch.url || '') + '" ' + isTriggerAttr + ' data-name="' + ch.name + '">');
-                html.push('<i class="' + ch.icon + '"></i>');
+                html.push('<div class="card locked" tabindex="0" data-url="' + (ch.url || '') + '" data-trigger="' + (ch.isTrigger ? "1" : "0") + '" data-name="' + ch.name + '">');
+                html.push('<i class="' + (ch.icon || "fas fa-tv") + '"></i>');
                 html.push('<span>' + ch.name + '</span>');
                 html.push('</div>');
             }
             gridEl.innerHTML = html.join('');
-            
-            // Asignar eventos DIRECTOS (más rápido que delegación en TVs lentos)
-            var cards = gridEl.children;
-            for (var i = 0; i < cards.length; i++) {
-                var card = cards[i];
-                var isTrigger = card.getAttribute('data-trigger') === '1';
-                var url = card.getAttribute('data-url');
-                
-                if (isTrigger) {
-                    card.onclick = function(e) {
-                        e.preventDefault();
-                        showFootball();
-                    };
-                    card.onkeypress = function(e) {
-                        if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            showFootball();
-                        }
-                    };
-                } else {
-                    if (url && url !== "") {
-                        card.onclick = (function(u) { return function() { window.open(u, "_blank"); }; })(url);
-                        card.onkeypress = (function(u) { return function(e) {
-                            if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                window.open(u, "_blank");
-                            }
-                        }; })(url);
-                    }
-                }
-            }
+            attachCardEvents(gridEl.children);
         }
-        
-        // ========== RENDER SUBMENÚ FÚTBOL ==========
+
+        // ===== RENDER FÚTBOL =====
         function renderFootball() {
             var html = [];
             for (var i = 0; i < footballOptions.length; i++) {
                 var opt = footballOptions[i];
-                html.push('<div class="card locked" data-url="' + opt.url + '">');
+                html.push('<div class="card locked" tabindex="0" data-url="' + opt.url + '" data-trigger="0" data-name="' + opt.name + '">');
                 html.push('<i class="' + opt.icon + '"></i>');
                 html.push('<span>' + opt.name + '</span>');
                 html.push('</div>');
             }
             gridEl.innerHTML = html.join('');
-            
-            // Asignar eventos a cada opción de fútbol
-            var cards = gridEl.children;
+            attachCardEvents(gridEl.children);
+        }
+
+        function attachCardEvents(cards) {
             for (var i = 0; i < cards.length; i++) {
-                var card = cards[i];
-                var url = card.getAttribute('data-url');
-                if (url) {
-                    card.onclick = (function(u) { return function() { window.open(u, "_blank"); }; })(url);
-                    card.onkeypress = (function(u) { return function(e) {
+                (function(card) {
+                    var url     = card.getAttribute('data-url');
+                    var name    = card.getAttribute('data-name');
+                    var trigger = card.getAttribute('data-trigger') === "1";
+                    card.onclick = function() { handleCardClick(url, name, trigger); };
+                    card.onkeypress = function(e) {
                         if (e.key === "Enter" || e.key === " ") {
                             e.preventDefault();
-                            window.open(u, "_blank");
+                            handleCardClick(url, name, trigger);
                         }
-                    }; })(url);
-                }
+                    };
+                })(cards[i]);
             }
         }
-        
-        // ========== MOSTRAR SUBMENÚ FÚTBOL ==========
+
+        // ===== SUBMENÚ FÚTBOL =====
         function showFootball() {
             if (currentMode === "football") return;
             currentMode = "football";
-            
-            // Cambiar título
             headerDiv.innerHTML = '<h1><i class="fas fa-futbol"></i> MENU FUTBOL - OPCIONES <i class="fas fa-tv"></i></h1>';
-            
-            // Crear botón volver si no existe
             backContainer.innerHTML = '<button class="back-button" id="btn-back-main"><i class="fas fa-arrow-left"></i> Volver al menú principal</button>';
-            var btn = document.getElementById("btn-back-main");
-            if (btn) {
-                btn.onclick = function() { goToMain(); };
-            }
-            
+            document.getElementById("btn-back-main").onclick = goToMain;
             renderFootball();
         }
-        
-        // ========== VOLVER AL MENÚ PRINCIPAL ==========
+
         function goToMain() {
             if (currentMode === "main") return;
             currentMode = "main";
-            
-            // Restaurar título original
             headerDiv.innerHTML = '<h1><i class="fas fa-tv"></i> MENU STPC TV <i class="fas fa-satellite-dish"></i></h1>';
-            
-            // Limpiar contenedor del botón volver
             backContainer.innerHTML = '';
-            
             renderMain();
         }
-        
-        // ========== INICIALIZAR ==========
-        function init() {
-            renderMain();
-            currentMode = "main";
-            backContainer.innerHTML = '';
-        }
-        
-        init();
-        
-        // Pequeño log para consola (no afecta rendimiento en TV)
-        if (window.console) console.log("MENU STPC TV + Submenú Fútbol - Modo ultra rápido para TV");
+
+        // ===== INIT =====
+        renderMain();
+
+        if (window.console) console.log("MENU STPC TV v2 — Sin tabs acumuladas | HLS.js + DASH | MX Player intent");
     </script>
 </body>
 </html>
