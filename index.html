@@ -97,6 +97,18 @@
         }
         .card i { font-size: 34px; color: #ffaa33; }
         .card span { display: block; font-weight: 600; word-break: break-word; }
+
+        /* Logos PNG con fallback a ícono FA */
+        .card .logo-img {
+            width: 80px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+        .card .logo-img.onerror-hide { display: none; }
+        .card .logo-fallback { display: none; font-size: 34px; color: #ffaa33; }
+        .card .logo-fallback.show { display: inline-block; }
+
         .card:hover { background: #2a2a4e; border-color: #ffaa33; }
         .card:focus-visible { outline: 3px solid #ff9800; outline-offset: 2px; background: #2a2a4e; border-color: #ff9800; }
 
@@ -340,61 +352,62 @@
         })();
 
         // ===== CANALES PRINCIPALES =====
+        // logo: nombre del archivo PNG en carpeta logos/ (null = sin logo, usa ícono FA)
         var channels = [
-            { name: "TV EN VIVO",     url: "https://pelisjuanita.com/tv/",                                          icon: "fas fa-play-circle" },
-            { name: "FUTBOL",         url: "",                                                                        icon: "fas fa-futbol",             isTrigger: 1 },
-            { name: "TV OP.2",        url: "https://www.cxtvenvivo.com/busqueda/?query=argentina",                   icon: "fas fa-search" },
-            { name: "TELEFE",         url: "https://pelisjuanita.com/tv/telefe",                                     icon: "fas fa-broadcast-tower" },
-            { name: "CANAL 13",       url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ",               icon: "fas fa-chalkboard" },
-            { name: "AMERICA",        url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW",              icon: "fas fa-globe-americas" },
-            { name: "TN",             url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz",          icon: "fas fa-newspaper" },
-            { name: "LA NACION+",     url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u",             icon: "fas fa-landmark" },
-            { name: "CRONICA",        url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW",             icon: "fas fa-clock" },
-            { name: "A24",            url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0",             icon: "fas fa-microphone-alt" },
-            { name: "C5N",            url: "https://dots.bestleague.world/cvatt.html?get=QzVO",                      icon: "fas fa-chart-line" },
-            { name: "TV PUBLICA",     url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3",                  icon: "fas fa-university" },
-            { name: "EL NUEVE",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5",                  icon: "fas fa-hashtag" },
-            { name: "CANAL 26",       url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ",              icon: "fas fa-broadcast-tower" },
-            { name: "TYC SPORTS",     url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ",              icon: "fas fa-medal" },
-            { name: "DEPORT TV",      url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE",             icon: "fas fa-running" },
-            { name: "ESPN",           url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA",               icon: "fab fa-js" },
-            { name: "ESPN PREMIUM",   url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", icon: "fas fa-crown" },
-            { name: "ESPN 2",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1",     icon: "fas fa-signal" },
-            { name: "ESPN 3",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1",           icon: "fas fa-satellite" },
-            { name: "ESPN 4",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1",          icon: "fas fa-wifi" },
-            { name: "ESPN 5",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1",          icon: "fas fa-star" },
-            { name: "ESPN 6",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", icon: "fas fa-flag" },
-            { name: "ESPN 7",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", icon: "fas fa-stopwatch" },
-            { name: "VOLVER",         url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1",          icon: "fas fa-film" },
-            { name: "EL GOURMET",     url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1",      icon: "fas fa-utensils" },
-            { name: "CARTOON NETW",   url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=",    icon: "fas fa-bug" },
-            { name: "NICKELODEON",    url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",         icon: "fas fa-smile" },
-            { name: "NICK JR",        url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",         icon: "fas fa-baby" },
-            { name: "DISNEY JR",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=",    icon: "fas fa-dragon" },
-            { name: "SPACE",          url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1",          icon: "fas fa-rocket" },
-            { name: "DISCOVERY TV",   url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=",    icon: "fas fa-microscope" },
-            { name: "HBO PLUS",       url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1",      icon: "fas fa-plus-circle" },
-            { name: "CDAD MAG",       url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1",      icon: "fas fa-magic" },
-            { name: "HBO EXTREME",    url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1", icon: "fas fa-fire" },
-            { name: "CINE ARG",       url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ",       icon: "fas fa-film" },
-            { name: "SONY",           url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1",          icon: "fas fa-tv" },
-            { name: "HBO 2",          url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1",          icon: "fas fa-circle" },
-            { name: "HBO FAMILY",     url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1", icon: "fas fa-users" },
-            { name: "HBO",            url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1",          icon: "fas fa-crown" },
-            { name: "CINECANAL",      url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1", icon: "fas fa-video" },
-            { name: "TCM",            url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1",              icon: "fas fa-film" },
-            { name: "LA RURAL",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=",        icon: "fas fa-tree" },
-            { name: "HISTORY",        url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1",     icon: "fas fa-landmark" },
-            { name: "HISTORY 2",      url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1",     icon: "fas fa-book" },
-            { name: "WARNER",         url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1",     icon: "fas fa-ticket-alt" },
-            { name: "TNT SERIES",     url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz",            icon: "fas fa-tv" },
-            { name: "CINEMAX",        url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==",            icon: "fas fa-camera" },
-            { name: "DISCOVERY H&H",  url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", icon: "fas fa-home" },
-            { name: "DISCOVERY",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=",        icon: "fas fa-globe" },
-            { name: "AXN",            url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=",                icon: "fas fa-bolt" },
-            { name: "FX",             url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==",                icon: "fas fa-skull" },
-            { name: "ANIMAL PLANET",  url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0",       icon: "fas fa-paw" },
-            { name: "MTV",            url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1",         icon: "fas fa-music" }
+            { name: "TV EN VIVO",     url: "https://pelisjuanita.com/tv/",                                               icon: "fas fa-play-circle",  logo: "TV.png" },
+            { name: "FUTBOL",         url: "",                                                                             icon: "fas fa-futbol",       logo: "futbol.png",        isTrigger: 1 },
+            { name: "TV OP.2",        url: "https://www.cxtvenvivo.com/busqueda/?query=argentina",                        icon: "fas fa-search",       logo: "TV2.png" },
+            { name: "TELEFE",         url: "https://pelisjuanita.com/tv/telefe",                                          icon: "fas fa-broadcast-tower", logo: "telefe.png" },
+            { name: "CANAL 13",       url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ",                   icon: "fas fa-chalkboard",   logo: "el-trece.png" },
+            { name: "AMERICA",        url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW",                  icon: "fas fa-globe-americas", logo: "america.png" },
+            { name: "TN",             url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz",              icon: "fas fa-newspaper",    logo: "tn.png" },
+            { name: "LA NACION+",     url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u",                 icon: "fas fa-landmark",     logo: "ln.png" },
+            { name: "CRONICA",        url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW",                 icon: "fas fa-clock",        logo: "cronica.png" },
+            { name: "A24",            url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0",                 icon: "fas fa-microphone-alt", logo: null },
+            { name: "C5N",            url: "https://dots.bestleague.world/cvatt.html?get=QzVO",                          icon: "fas fa-chart-line",   logo: "c5n.png" },
+            { name: "TV PUBLICA",     url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3",                      icon: "fas fa-university",   logo: null },
+            { name: "EL NUEVE",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5",                      icon: "fas fa-hashtag",      logo: "canal-nueve.png" },
+            { name: "CANAL 26",       url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ",                  icon: "fas fa-broadcast-tower", logo: "canal-26.png" },
+            { name: "TYC SPORTS",     url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ",                  icon: "fas fa-medal",        logo: "tyc-sports.png" },
+            { name: "DEPORT TV",      url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE",                 icon: "fas fa-running",      logo: "deportv.png" },
+            { name: "ESPN",           url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA",                   icon: "fas fa-bolt",         logo: "espn.png" },
+            { name: "ESPN PREMIUM",   url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", icon: "fas fa-crown",       logo: "espn-premium.png" },
+            { name: "ESPN 2",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1",         icon: "fas fa-signal",       logo: "espn-2.png" },
+            { name: "ESPN 3",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1",               icon: "fas fa-satellite",    logo: "espn-3.png" },
+            { name: "ESPN 4",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1",              icon: "fas fa-wifi",         logo: "espn-4.png" },
+            { name: "ESPN 5",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1",              icon: "fas fa-star",         logo: "espn-5.png" },
+            { name: "ESPN 6",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", icon: "fas fa-flag",         logo: "espn-6.png" },
+            { name: "ESPN 7",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", icon: "fas fa-stopwatch",    logo: "espn-7.png" },
+            { name: "VOLVER",         url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1",              icon: "fas fa-film",         logo: "volver.png" },
+            { name: "EL GOURMET",     url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1",          icon: "fas fa-utensils",     logo: "el-gourmet.png" },
+            { name: "CARTOON NETW",   url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=",        icon: "fas fa-bug",          logo: null },
+            { name: "NICKELODEON",    url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",             icon: "fas fa-smile",        logo: "nick.png" },
+            { name: "NICK JR",        url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",             icon: "fas fa-baby",         logo: "nick-jr.png" },
+            { name: "DISNEY JR",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=",        icon: "fas fa-dragon",       logo: "disney-jr.png" },
+            { name: "SPACE",          url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1",              icon: "fas fa-rocket",       logo: "space.png" },
+            { name: "DISCOVERY TV",   url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=",        icon: "fas fa-microscope",   logo: "discovery-turbo.png" },
+            { name: "HBO PLUS",       url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1",          icon: "fas fa-plus-circle",  logo: "hbo-plus.png" },
+            { name: "CDAD MAG",       url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1",          icon: "fas fa-magic",        logo: "ciudad-magazine.png" },
+            { name: "HBO EXTREME",    url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1",     icon: "fas fa-fire",         logo: "hbo-xtreme.png" },
+            { name: "CINE ARG",       url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ",           icon: "fas fa-film",         logo: "cine-ar.png" },
+            { name: "SONY",           url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1",              icon: "fas fa-tv",           logo: null },
+            { name: "HBO 2",          url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1",              icon: "fas fa-circle",       logo: null },
+            { name: "HBO FAMILY",     url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1",     icon: "fas fa-users",        logo: "hbo-family.png" },
+            { name: "HBO",            url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1",              icon: "fas fa-crown",        logo: "hbo.png" },
+            { name: "CINECANAL",      url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1",     icon: "fas fa-video",        logo: null },
+            { name: "TCM",            url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1",                  icon: "fas fa-film",         logo: "tcm.png" },
+            { name: "LA RURAL",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=",            icon: "fas fa-tree",         logo: "canal-rural.png" },
+            { name: "HISTORY",        url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1",         icon: "fas fa-landmark",     logo: "history.png" },
+            { name: "HISTORY 2",      url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1",         icon: "fas fa-book",         logo: "history-2.png" },
+            { name: "WARNER",         url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1",         icon: "fas fa-ticket-alt",   logo: null },
+            { name: "TNT SERIES",     url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz",                icon: "fas fa-tv",           logo: "tnt-series.png" },
+            { name: "CINEMAX",        url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==",                icon: "fas fa-camera",       logo: "cinemax.png" },
+            { name: "DISCOVERY H&H",  url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", icon: "fas fa-home", logo: "discovery-h-h.png" },
+            { name: "DISCOVERY",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=",            icon: "fas fa-globe",        logo: "discovery-channel.png" },
+            { name: "AXN",            url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=",                    icon: "fas fa-bolt",         logo: "axn.png" },
+            { name: "FX",             url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==",                    icon: "fas fa-skull",        logo: null },
+            { name: "ANIMAL PLANET",  url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0",           icon: "fas fa-paw",          logo: "animal-planet.png" },
+            { name: "MTV",            url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1",             icon: "fas fa-music",        logo: "mtv.png" }
         ];
 
         // ===== FÚTBOL =====
@@ -602,13 +615,23 @@
             }
         }
 
+        // ===== HELPER: genera el HTML del ícono/logo de una card =====
+        function logoHtml(ch) {
+            if (ch.logo) {
+                return '<img class="logo-img" src="logos/' + ch.logo + '" alt="' + ch.name + '" ' +
+                    'onerror="this.style.display=\'none\';this.nextElementSibling.classList.add(\'show\')">' +
+                    '<i class="logo-fallback ' + (ch.icon || 'fas fa-tv') + '"></i>';
+            }
+            return '<i class="' + (ch.icon || 'fas fa-tv') + '"></i>';
+        }
+
         // ===== RENDER PRINCIPAL =====
         function renderMain() {
             var html = [];
             for (var i = 0; i < channels.length; i++) {
                 var ch = channels[i];
                 html.push('<div class="card locked" tabindex="0" data-url="' + (ch.url || '') + '" data-trigger="' + (ch.isTrigger ? "1" : "0") + '" data-name="' + ch.name + '">');
-                html.push('<i class="' + (ch.icon || "fas fa-tv") + '"></i>');
+                html.push(logoHtml(ch));
                 html.push('<span>' + ch.name + '</span>');
                 html.push('</div>');
             }
@@ -622,7 +645,7 @@
             for (var i = 0; i < footballOptions.length; i++) {
                 var opt = footballOptions[i];
                 html.push('<div class="card locked" tabindex="0" data-url="' + opt.url + '" data-trigger="0" data-name="' + opt.name + '">');
-                html.push('<i class="' + opt.icon + '"></i>');
+                html.push(logoHtml(opt));
                 html.push('<span>' + opt.name + '</span>');
                 html.push('</div>');
             }
