@@ -187,83 +187,6 @@
         }
         .modal-cancel:hover { color: #ccc; }
 
-        /* ===== IFRAME OVERLAY (canales web externos) ===== */
-        #iframe-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 200;
-            flex-direction: column;
-        }
-        #iframe-overlay.visible { display: flex; }
-
-        #iframe-topbar {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
-            background: rgba(0,0,0,0.85);
-            flex-shrink: 0;
-        }
-
-        #iframe-channel-name {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #ffaa33;
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        #btn-close-iframe {
-            background: #cc3300;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            padding: 8px 18px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        #btn-close-iframe:hover { background: #ff4400; }
-
-        #iframe-wrap {
-            flex: 1;
-            position: relative;
-            background: #000;
-        }
-
-        #web-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #000;
-        }
-
-        /* Mensaje que aparece si el iframe es bloqueado por el sitio */
-        #iframe-blocked {
-            display: none;
-            position: absolute;
-            inset: 0;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 16px;
-            background: #0a0a0a;
-            text-align: center;
-            padding: 30px;
-        }
-        #iframe-blocked.visible { display: flex; }
-        #iframe-blocked i { font-size: 3rem; color: #ff9800; }
-        #iframe-blocked p { color: #ccc; font-size: 0.95rem; line-height: 1.5; }
-        #iframe-blocked strong { color: #ffaa33; }
-
         /* ===== REPRODUCTOR INLINE ===== */
         #player-overlay {
             display: none;
@@ -337,68 +260,6 @@
             white-space: nowrap;
         }
 
-        /* ===== BOTÓN FLOTANTE DE OPCIONES ===== */
-        /* position:absolute relativo al iframe-wrap (que tiene position:relative) */
-        #fab-options {
-            display: none;
-            position: absolute;
-            bottom: 28px;
-            right: 24px;
-            z-index: 300;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-            pointer-events: auto;
-        }
-        #fab-options.visible { display: flex; }
-
-        #fab-label {
-            background: rgba(0,0,0,0.82);
-            color: #ffaa33;
-            font-size: 0.78rem;
-            font-weight: 600;
-            padding: 5px 12px;
-            border-radius: 20px;
-            white-space: nowrap;
-            border: 1px solid rgba(255,170,51,0.35);
-        }
-
-        #fab-timer-bar {
-            width: 100%;
-            height: 3px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        #fab-timer-fill {
-            height: 100%;
-            width: 100%;
-            background: #ffaa33;
-            border-radius: 2px;
-        }
-
-        #fab-btn {
-            background: #1a1a2e;
-            border: 2px solid #ff9800;
-            border-radius: 50px;
-            color: #ffaa33;
-            font-size: 0.9rem;
-            font-weight: 700;
-            padding: 12px 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.6);
-        }
-        #fab-btn i { font-size: 1.1rem; }
-        #fab-btn:hover { background: #2a2a4e; border-color: #ffcc66; }
-
-        @keyframes fabIn  { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes fabOut { from { opacity:1; transform:translateY(0); }    to { opacity:0; transform:translateY(16px); } }
-        #fab-options.anim-in  { animation: fabIn  0.3s ease forwards; }
-        #fab-options.anim-out { animation: fabOut 0.35s ease forwards; }
-
         /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #1e1e1e; }
@@ -426,37 +287,6 @@
         </div>
         <div id="back-button-container" style="min-height:52px;"></div>
         <div class="grid" id="grid"></div>
-    </div>
-
-    <!-- IFRAME OVERLAY: canales web externos cargados dentro de la página -->
-    <div id="iframe-overlay">
-        <div id="iframe-topbar">
-            <i class="fas fa-globe" style="color:#ffaa33;font-size:1.2rem;flex-shrink:0;"></i>
-            <span id="iframe-channel-name">Canal</span>
-            <button id="btn-close-iframe"><i class="fas fa-times"></i> CERRAR</button>
-        </div>
-        <div id="iframe-wrap">
-            <iframe id="web-iframe" src="about:blank" allowfullscreen
-                allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
-            </iframe>
-            <!-- Mensaje si el sitio bloquea iframes -->
-            <div id="iframe-blocked">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>
-                    <strong>Este canal no permite cargarse aquí.</strong><br>
-                    Usá las opciones de reproducción para abrirlo en MX Player, VLC<br>
-                    o directamente en el navegador.
-                </p>
-            </div>
-            <!-- FAB flotante encima del iframe -->
-            <div id="fab-options">
-                <div id="fab-label">¿Problemas para reproducir?</div>
-                <div id="fab-timer-bar"><div id="fab-timer-fill"></div></div>
-                <button id="fab-btn">
-                    <i class="fas fa-cog"></i> Opciones de reproducción
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- MODAL: elegir cómo abrir -->
@@ -513,9 +343,9 @@
         // ===== CANALES PRINCIPALES =====
         // CORREGIDO: logos agregados para los 8 canales que faltaban
         const channels = [
-            { name: "TV EN VIVO",     url: "https://pelisjuanita.com/tv/",                                               icon: "fas fa-play-circle",     logo: "TV.png",     noIframe: true },
-            { name: "FUTBOL",         url: "",                                                                             icon: "fas fa-futbol",          logo: "futbol.png", noIframe: true,    isTrigger: true },
-            { name: "TV OP.2",        url: "https://www.cxtvenvivo.com/busqueda/?query=argentina",                        icon: "fas fa-search",          logo: "TV2.png",    noIframe: true },
+            { name: "TV EN VIVO",     url: "https://pelisjuanita.com/tv/",                                               icon: "fas fa-play-circle",     logo: "TV.png" },
+            { name: "FUTBOL",         url: "",                                                                             icon: "fas fa-futbol",          logo: "futbol.png",        isTrigger: true },
+            { name: "TV OP.2",        url: "https://www.cxtvenvivo.com/busqueda/?query=argentina",                        icon: "fas fa-search",          logo: "TV2.png" },
             { name: "TELEFE",         url: "https://pelisjuanita.com/tv/telefe",                                          icon: "fas fa-broadcast-tower", logo: "telefe.png" },
             { name: "CANAL 13",       url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ",                   icon: "fas fa-chalkboard",      logo: "el-trece.png" },
             { name: "AMERICA",        url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW",                  icon: "fas fa-globe-americas",  logo: "america.png" },
@@ -665,13 +495,10 @@
         const btnClosePlayer  = document.getElementById("btn-close-player");
 
         // ===== MODAL =====
-        // forceAll=true: muestra todas las opciones (usado desde el FAB dentro del iframe)
-        // forceAll=false (default): solo muestra las opciones que corresponden al tipo de URL
-        function showModal(url, name, forceAll) {
+        function showModal(url, name) {
             currentUrl  = url;
             currentName = name;
             const type  = detectUrlType(url);
-            const isStream = (type === "hls" || type === "dash");
 
             modalTitle.textContent    = name;
             modalSubtitle.textContent = type === "hls"  ? "Stream HLS (m3u8)" :
@@ -679,11 +506,9 @@
                                         type === "m3u"  ? "Lista M3U"         :
                                         "Sitio web externo";
 
-            // Si viene del FAB (forceAll), mostramos MX Player y VLC siempre
-            // porque el usuario ya sabe que algo falló y necesita alternativas
-            btnInline.style.display   = isStream ? "flex" : "none";
-            btnMxPlayer.style.display = (isStream || forceAll) ? "flex" : "none";
-            btnVlc.style.display      = (isStream || forceAll) ? "flex" : "none";
+            btnInline.style.display   = (type === "hls" || type === "dash") ? "flex" : "none";
+            btnMxPlayer.style.display = (type === "hls" || type === "dash") ? "flex" : "none";
+            btnVlc.style.display      = (type === "hls" || type === "dash") ? "flex" : "none";
             btnBrowser.style.display  = "flex";
 
             modalOverlay.classList.add("visible");
@@ -850,124 +675,15 @@
 
         btnClosePlayer.onclick = closePlayer;
 
-        // ===== IFRAME OVERLAY (canales web externos) =====
-        const iframeOverlay   = document.getElementById("iframe-overlay");
-        const iframeChannelNm = document.getElementById("iframe-channel-name");
-        const webIframe       = document.getElementById("web-iframe");
-        const iframeBlocked   = document.getElementById("iframe-blocked");
-        const btnCloseIframe  = document.getElementById("btn-close-iframe");
-
-        // Reasignamos btnBrowser aquí para que pueda acceder a iframeOverlay
-        // Si el iframe estaba abierto lo cerramos antes de navegar al sitio
-        btnBrowser.onclick = function() {
-            hideModal();
-            if (iframeOverlay.classList.contains("visible")) {
-                webIframe.src = "about:blank";
-                iframeOverlay.classList.remove("visible");
-                iframeBlocked.classList.remove("visible");
-            }
-            window.location.href = currentUrl;
-        };
-
-        function openIframe(url, name) {
-            currentUrl  = url;
-            currentName = name;
-
-            iframeChannelNm.textContent = name;
-            iframeBlocked.classList.remove("visible");
-            webIframe.src = url;
-            iframeOverlay.classList.add("visible");
-
-            // Detectar si el sitio bloqueó el iframe:
-            // Si tras 8 segundos el iframe sigue sin contenido útil, mostramos aviso.
-            // No es 100% exacto pero cubre la mayoría de los casos.
-            webIframe.onload = function() {
-                try {
-                    // Si el iframe cargó pero está vacío o bloqueado, el acceso
-                    // a contentDocument lanza excepción (cross-origin) → sitio cargó OK
-                    // Si no lanza y el body está vacío → posible bloqueo
-                    const doc = webIframe.contentDocument;
-                    if (doc && doc.body && doc.body.innerHTML.trim() === "") {
-                        iframeBlocked.classList.add("visible");
-                    }
-                } catch(e) {
-                    // Cross-origin: el sitio cargó correctamente en el iframe
-                    iframeBlocked.classList.remove("visible");
-                }
-            };
-
-            // Mostrar FAB encima del iframe
-            showFab(url, name);
-        }
-
-        function closeIframe() {
-            hideFab();
-            webIframe.src     = "about:blank";
-            iframeOverlay.classList.remove("visible");
-            iframeBlocked.classList.remove("visible");
-        }
-
-        btnCloseIframe.onclick = closeIframe;
-
-        // ===== BOTÓN FLOTANTE (FAB) =====
-        // Aparece encima del iframe durante FAB_DURATION segundos.
-        // Si el canal carga bien → desaparece solo sin molestar.
-        // Si falla → el usuario lo toca y elige otra forma de reproducir.
-        const fabEl        = document.getElementById("fab-options");
-        const fabTimerFill = document.getElementById("fab-timer-fill");
-        const fabBtn       = document.getElementById("fab-btn");
-
-        const FAB_DURATION = 15000; // ms antes de desaparecer
-        let fabTimer     = null;
-        let fabAnimTimer = null;
-
-        function showFab(url, name) {
-            clearTimeout(fabTimer);
-            clearTimeout(fabAnimTimer);
-
-            fabEl.classList.remove("anim-out");
-            fabEl.classList.add("visible", "anim-in");
-
-            // Barra de progreso que se vacía en FAB_DURATION ms
-            fabTimerFill.style.transition = "none";
-            fabTimerFill.style.width      = "100%";
-            fabTimerFill.getBoundingClientRect(); // forzar repaint
-            fabTimerFill.style.transition = "width " + (FAB_DURATION / 1000) + "s linear";
-            fabTimerFill.style.width      = "0%";
-
-            fabTimer = setTimeout(hideFab, FAB_DURATION);
-        }
-
-        function hideFab() {
-            clearTimeout(fabTimer);
-            fabEl.classList.remove("anim-in");
-            fabEl.classList.add("anim-out");
-            fabAnimTimer = setTimeout(function() {
-                fabEl.classList.remove("visible", "anim-out");
-            }, 380);
-        }
-
-        // Al tocar el FAB: abre el modal con TODAS las opciones (forceAll=true)
-        // El iframe queda visible detrás del modal — si elige "Abrir en browser"
-        // closeIframe se llama desde btnBrowser para no acumular estado
-        fabBtn.onclick = function() {
-            hideFab();
-            showModal(currentUrl, currentName, true);
-        };
-
         // ===== CLICK EN CARD =====
-        function handleCardClick(url, name, isTrigger, noFrame) {
+        function handleCardClick(url, name, isTrigger) {
             if (isTrigger) { showFootball(); return; }
             if (!url) return;
             const type = detectUrlType(url);
             if (type === "hls" || type === "dash") {
                 showModal(url, name);
-            } else if (noFrame) {
-                // Canales excluidos del iframe: van directo al browser sin FAB
-                window.location.href = url;
             } else {
-                // Resto: carga en iframe con FAB de emergencia
-                openIframe(url, name);
+                window.location.href = url;
             }
         }
 
@@ -988,7 +704,6 @@
                 return '<div class="card locked" tabindex="0" ' +
                     'data-url="' + (ch.url || '') + '" ' +
                     'data-trigger="' + (ch.isTrigger ? "1" : "0") + '" ' +
-                    'data-noframe="' + (ch.noIframe ? "1" : "0") + '" ' +
                     'data-name="' + ch.name + '">' +
                     logoHtml(ch) +
                     '<span>' + ch.name + '</span>' +
@@ -1003,12 +718,11 @@
                 const url     = card.getAttribute('data-url');
                 const name    = card.getAttribute('data-name');
                 const trigger = card.getAttribute('data-trigger') === "1";
-                const noFrame = card.getAttribute('data-noframe') === "1";
-                card.onclick = function() { handleCardClick(url, name, trigger, noFrame); };
+                card.onclick = function() { handleCardClick(url, name, trigger); };
                 card.onkeydown = function(e) {
                     if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        handleCardClick(url, name, trigger, noFrame);
+                        handleCardClick(url, name, trigger);
                     }
                 };
             });
