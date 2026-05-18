@@ -260,6 +260,151 @@
             white-space: nowrap;
         }
 
+        /* ===== MENÚ FLOTANTE FÚTBOL ===== */
+        #football-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #13132a;
+            border: 2px solid #ff9800;
+            border-radius: 20px;
+            padding: 20px 18px 16px;
+            z-index: 150;
+            min-width: 280px;
+            max-width: 94vw;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+        }
+        #football-panel.visible { display: block; }
+        #football-panel-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffaa33;
+            margin-bottom: 14px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .fp-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            background: #1e1e3a;
+            border: 1.5px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        .fp-btn i { color: #ffaa33; min-width: 22px; font-size: 1.1rem; }
+        .fp-btn:hover { background: #2a2a50; border-color: #ffaa33; }
+        .fp-btn:last-of-type { margin-bottom: 0; }
+        #football-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 149;
+        }
+        #football-backdrop.visible { display: block; }
+        #fp-cancel {
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 0.82rem;
+            cursor: pointer;
+            margin-top: 10px;
+            padding: 4px;
+            text-align: center;
+        }
+        #fp-cancel:hover { color: #ccc; }
+
+        /* ===== SELECTOR DE FUENTE (opción 1 / opción 2) ===== */
+        #source-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #13132a;
+            border: 2px solid #ff9800;
+            border-radius: 20px;
+            padding: 22px 20px 16px;
+            z-index: 150;
+            min-width: 290px;
+            max-width: 94vw;
+            text-align: center;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+        }
+        #source-panel.visible { display: block; }
+        #source-panel-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffaa33;
+            margin-bottom: 4px;
+        }
+        #source-countdown-bar-wrap {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            height: 5px;
+            margin: 10px 0 16px;
+            overflow: hidden;
+        }
+        #source-countdown-bar {
+            height: 5px;
+            background: #ff9800;
+            border-radius: 6px;
+            width: 100%;
+            transition: width 1s linear;
+        }
+        #source-countdown-text {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 14px;
+            margin-top: -10px;
+        }
+        .src-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            background: #1e1e3a;
+            border: 1.5px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        .src-btn i { color: #ffaa33; min-width: 24px; font-size: 1.2rem; }
+        .src-btn small { display: block; font-size: 0.7rem; color: #aaa; font-weight: 400; margin-top: 2px; }
+        .src-btn:hover { background: #2a2a50; border-color: #ffaa33; }
+        .src-btn.active-countdown { border-color: #ff9800; box-shadow: 0 0 0 2px rgba(255,152,0,0.3); }
+        #src-cancel {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 0.82rem;
+            cursor: pointer;
+            padding: 4px;
+            margin-top: 2px;
+        }
+        #src-cancel:hover { color: #ccc; }
+
         /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #1e1e1e; }
@@ -287,6 +432,33 @@
         </div>
         <div id="back-button-container" style="min-height:52px;"></div>
         <div class="grid" id="grid"></div>
+    </div>
+
+    <!-- BACKDROP FÚTBOL -->
+    <div id="football-backdrop"></div>
+
+    <!-- PANEL FLOTANTE FÚTBOL -->
+    <div id="football-panel">
+        <div id="football-panel-title"><i class="fas fa-futbol"></i> FÚTBOL — ELEGIR OPCIÓN</div>
+    </div>
+
+    <!-- BACKDROP SELECTOR DE FUENTE -->
+    <div id="source-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:149;"></div>
+
+    <!-- PANEL SELECTOR DE FUENTE -->
+    <div id="source-panel">
+        <div id="source-panel-title"></div>
+        <div id="source-countdown-bar-wrap"><div id="source-countdown-bar"></div></div>
+        <div id="source-countdown-text">Abriendo Opción 1 en <span id="source-seconds">6</span>s...</div>
+        <button class="src-btn active-countdown" id="src-btn-1">
+            <i class="fas fa-play-circle"></i>
+            <div>Opción 1 <small>Fuente principal</small></div>
+        </button>
+        <button class="src-btn" id="src-btn-2">
+            <i class="fas fa-satellite-dish"></i>
+            <div>Opción 2 <small>Fuente alternativa</small></div>
+        </button>
+        <button id="src-cancel">✕ Cancelar</button>
     </div>
 
     <!-- MODAL: elegir cómo abrir -->
@@ -347,56 +519,56 @@
             { name: "FUTBOL",         url: "",                                                                             icon: "fas fa-futbol",          logo: "futbol.png",        isTrigger: true },
             { name: "TV OP.2",        url: "https://www.cablevisionhd.com/",                        icon: "fas fa-search",          logo: "TV2.png" },
             { name: "TELEFE",         url: "https://pelisjuanita.com/tv/telefe",                                          icon: "fas fa-broadcast-tower", logo: "telefe.png" },
-            { name: "CANAL 13",       url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ",                   icon: "fas fa-chalkboard",      logo: "el-trece.png" },
-            { name: "AMERICA",        url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW",                  icon: "fas fa-globe-americas",  logo: "america.png" },
-            { name: "TN",             url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz",              icon: "fas fa-newspaper",       logo: "tn.png" },
-            { name: "LA NACION+",     url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u",                 icon: "fas fa-landmark",        logo: "ln.png" },
-            { name: "CRONICA",        url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW",                 icon: "fas fa-clock",           logo: "cronica.png" },
-            { name: "A24",            url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0",                 icon: "fas fa-microphone-alt",  logo: "a24.png" },
-            { name: "C5N",            url: "https://dots.bestleague.world/cvatt.html?get=QzVO",                          icon: "fas fa-chart-line",      logo: "c5n.png" },
-            { name: "TV PUBLICA",     url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3",                      icon: "fas fa-university",      logo: "tv-publica.png" },
-            { name: "EL NUEVE",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5",                      icon: "fas fa-hashtag",         logo: "canal-nueve.png" },
-            { name: "CANAL 26",       url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ",                  icon: "fas fa-broadcast-tower", logo: "canal-26.png" },
-            { name: "TYC SPORTS",     url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ",                  icon: "fas fa-medal",           logo: "tyc-sports.png" },
-            { name: "DEPORT TV",      url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE",                 icon: "fas fa-running",         logo: "deportv.png" },
-            { name: "ESPN",           url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA",                   icon: "fas fa-bolt",            logo: "espn.png" },
-            { name: "ESPN PREMIUM",   url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", icon: "fas fa-crown",          logo: "espn-premium.png" },
-            { name: "ESPN 2",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1",         icon: "fas fa-signal",          logo: "espn-2.png" },
-            { name: "ESPN 3",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1",               icon: "fas fa-satellite",       logo: "espn-3.png" },
-            { name: "ESPN 4",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1",              icon: "fas fa-wifi",            logo: "espn-4.png" },
-            { name: "ESPN 5",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1",              icon: "fas fa-star",            logo: "espn-5.png" },
-            { name: "ESPN 6",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", icon: "fas fa-flag",            logo: "espn-6.png" },
-            { name: "ESPN 7",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", icon: "fas fa-stopwatch",       logo: "espn-7.png" },
-            { name: "VOLVER",         url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1",              icon: "fas fa-film",            logo: "volver.png" },
-            { name: "EL GOURMET",     url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1",          icon: "fas fa-utensils",        logo: "el-gourmet.png" },
-            { name: "CARTOON NETW",   url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=",        icon: "fas fa-bug",             logo: "cartoon-network.png" },
-            { name: "NICKELODEON",    url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",             icon: "fas fa-smile",           logo: "nick.png" },
-            { name: "NICK JR",        url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",             icon: "fas fa-baby",            logo: "nick-jr.png" },
-            { name: "DISNEY JR",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=",        icon: "fas fa-dragon",          logo: "disney-jr.png" },
-            { name: "SPACE",          url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1",              icon: "fas fa-rocket",          logo: "space.png" },
-            { name: "DISCOVERY TV",   url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=",        icon: "fas fa-microscope",      logo: "discovery-turbo.png" },
-            { name: "HBO PLUS",       url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1",          icon: "fas fa-plus-circle",     logo: "hbo-plus.png" },
-            { name: "CDAD MAG",       url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1",          icon: "fas fa-magic",           logo: "ciudad-magazine.png" },
-            { name: "HBO EXTREME",    url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1",     icon: "fas fa-fire",            logo: "hbo-xtreme.png" },
-            { name: "CINE ARG",       url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ",           icon: "fas fa-film",            logo: "cine-ar.png" },
-            { name: "SONY",           url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1",              icon: "fas fa-tv",              logo: "sony.png" },
-            { name: "HBO 2",          url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1",              icon: "fas fa-circle",          logo: "hbo-2.png" },
-            { name: "HBO FAMILY",     url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1",     icon: "fas fa-users",           logo: "hbo-family.png" },
-            { name: "HBO",            url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1",              icon: "fas fa-crown",           logo: "hbo.png" },
-            { name: "CINECANAL",      url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1",     icon: "fas fa-video",           logo: "cinecanal.png" },
-            { name: "TCM",            url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1",                  icon: "fas fa-film",            logo: "tcm.png" },
-            { name: "LA RURAL",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=",            icon: "fas fa-tree",            logo: "canal-rural.png" },
-            { name: "HISTORY",        url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1",         icon: "fas fa-landmark",        logo: "history.png" },
-            { name: "HISTORY 2",      url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1",         icon: "fas fa-book",            logo: "history-2.png" },
-            { name: "WARNER",         url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1",         icon: "fas fa-ticket-alt",      logo: "warner.png" },
-            { name: "TNT SERIES",     url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz",                icon: "fas fa-tv",              logo: "tnt-series.png" },
-            { name: "CINEMAX",        url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==",                icon: "fas fa-camera",          logo: "cinemax.png" },
-            { name: "DISCOVERY H&H",  url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", icon: "fas fa-home", logo: "discovery-h-h.png" },
-            { name: "DISCOVERY",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=",            icon: "fas fa-globe",           logo: "discovery-channel.png" },
-            { name: "AXN",            url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=",                    icon: "fas fa-bolt",            logo: "axn.png" },
-            { name: "FX",             url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==",                    icon: "fas fa-skull",           logo: "fx.png" },
-            { name: "ANIMAL PLANET",  url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0",           icon: "fas fa-paw",             logo: "animal-planet.png" },
-            { name: "MTV",            url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1",             icon: "fas fa-music",           logo: "mtv.png" }
+            { name: "CANAL 13",       url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ",                   icon: "fas fa-chalkboard",      logo: "el-trece.png",        url2: "https://pelisjuanita.com/tv/el-trece" },
+            { name: "AMERICA",        url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW",                  icon: "fas fa-globe-americas",  logo: "america.png",         url2: "https://pelisjuanita.com/tv/america" },
+            { name: "TN",             url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz",              icon: "fas fa-newspaper",       logo: "tn.png",              url2: "https://pelisjuanita.com/tv/tn" },
+            { name: "LA NACION+",     url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u",                 icon: "fas fa-landmark",        logo: "ln.png",              url2: "https://pelisjuanita.com/tv/ln" },
+            { name: "CRONICA",        url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW",                 icon: "fas fa-clock",           logo: "cronica.png",         url2: "https://pelisjuanita.com/tv/cronica" },
+            { name: "A24",            url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0",                 icon: "fas fa-microphone-alt",  logo: "a24.png",             url2: "https://pelisjuanita.com/tv/a24" },
+            { name: "C5N",            url: "https://dots.bestleague.world/cvatt.html?get=QzVO",                          icon: "fas fa-chart-line",      logo: "c5n.png",             url2: "https://pelisjuanita.com/tv/c5n" },
+            { name: "TV PUBLICA",     url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3",                      icon: "fas fa-university",      logo: "tv-publica.png",      url2: "https://pelisjuanita.com/tv/tv-publica" },
+            { name: "EL NUEVE",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5",                      icon: "fas fa-hashtag",         logo: "canal-nueve.png",     url2: "https://pelisjuanita.com/tv/canal-nueve" },
+            { name: "CANAL 26",       url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ",                  icon: "fas fa-broadcast-tower", logo: "canal-26.png",        url2: "https://pelisjuanita.com/tv/canal-26" },
+            { name: "TYC SPORTS",     url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ",                  icon: "fas fa-medal",           logo: "tyc-sports.png",      url2: "https://pelisjuanita.com/tv/tyc-sports" },
+            { name: "DEPORT TV",      url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE",                 icon: "fas fa-running",         logo: "deportv.png",         url2: "https://pelisjuanita.com/tv/deportv" },
+            { name: "ESPN",           url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA",                   icon: "fas fa-bolt",            logo: "espn.png",            url2: "https://pelisjuanita.com/tv/espn" },
+            { name: "ESPN PREMIUM",   url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", icon: "fas fa-crown",          logo: "espn-premium.png",    url2: "https://pelisjuanita.com/tv/espn-premium" },
+            { name: "ESPN 2",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1",         icon: "fas fa-signal",          logo: "espn-2.png",          url2: "https://pelisjuanita.com/tv/espn-2" },
+            { name: "ESPN 3",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1",               icon: "fas fa-satellite",       logo: "espn-3.png",          url2: "https://pelisjuanita.com/tv/espn-3" },
+            { name: "ESPN 4",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1",              icon: "fas fa-wifi",            logo: "espn-4.png",          url2: "https://pelisjuanita.com/tv/espn-4" },
+            { name: "ESPN 5",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1",              icon: "fas fa-star",            logo: "espn-5.png",          url2: "https://pelisjuanita.com/tv/espn-5" },
+            { name: "ESPN 6",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", icon: "fas fa-flag",            logo: "espn-6.png",          url2: "https://pelisjuanita.com/tv/espn-6" },
+            { name: "ESPN 7",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", icon: "fas fa-stopwatch",       logo: "espn-7.png",          url2: "https://pelisjuanita.com/tv/espn-7" },
+            { name: "VOLVER",         url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1",              icon: "fas fa-film",            logo: "volver.png",          url2: "https://pelisjuanita.com/tv/volver" },
+            { name: "EL GOURMET",     url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1",          icon: "fas fa-utensils",        logo: "el-gourmet.png",      url2: "https://pelisjuanita.com/tv/el-gourmet" },
+            { name: "CARTOON NETW",   url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=",        icon: "fas fa-bug",             logo: "cartoon-network.png", url2: "https://pelisjuanita.com/tv/cartoon-network" },
+            { name: "NICKELODEON",    url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",             icon: "fas fa-smile",           logo: "nick.png",            url2: "https://pelisjuanita.com/tv/nick" },
+            { name: "NICK JR",        url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",             icon: "fas fa-baby",            logo: "nick-jr.png",         url2: "https://pelisjuanita.com/tv/nick-jr" },
+            { name: "DISNEY JR",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=",        icon: "fas fa-dragon",          logo: "disney-jr.png",       url2: "https://pelisjuanita.com/tv/disney-jr" },
+            { name: "SPACE",          url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1",              icon: "fas fa-rocket",          logo: "space.png",           url2: "https://pelisjuanita.com/tv/space" },
+            { name: "DISCOVERY TV",   url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=",        icon: "fas fa-microscope",      logo: "discovery-turbo.png", url2: "https://pelisjuanita.com/tv/discovery-turbo" },
+            { name: "HBO PLUS",       url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1",          icon: "fas fa-plus-circle",     logo: "hbo-plus.png",        url2: "https://pelisjuanita.com/tv/hbo-plus" },
+            { name: "CDAD MAG",       url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1",          icon: "fas fa-magic",           logo: "ciudad-magazine.png", url2: "https://pelisjuanita.com/tv/ciudad-magazine" },
+            { name: "HBO EXTREME",    url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1",     icon: "fas fa-fire",            logo: "hbo-xtreme.png",      url2: "https://pelisjuanita.com/tv/hbo-xtreme" },
+            { name: "CINE ARG",       url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ",           icon: "fas fa-film",            logo: "cine-ar.png",         url2: "https://pelisjuanita.com/tv/cine-ar" },
+            { name: "SONY",           url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1",              icon: "fas fa-tv",              logo: "sony.png",            url2: "https://pelisjuanita.com/tv/sony-channel" },
+            { name: "HBO 2",          url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1",              icon: "fas fa-circle",          logo: "hbo-2.png",           url2: "https://pelisjuanita.com/tv/hbo-2" },
+            { name: "HBO FAMILY",     url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1",     icon: "fas fa-users",           logo: "hbo-family.png",      url2: "https://pelisjuanita.com/tv/hbo-family" },
+            { name: "HBO",            url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1",              icon: "fas fa-crown",           logo: "hbo.png",             url2: "https://pelisjuanita.com/tv/hbo" },
+            { name: "CINECANAL",      url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1",     icon: "fas fa-video",           logo: "cinecanal.png",       url2: "https://pelisjuanita.com/tv/cinecanal" },
+            { name: "TCM",            url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1",                  icon: "fas fa-film",            logo: "tcm.png",             url2: "https://pelisjuanita.com/tv/tcm" },
+            { name: "LA RURAL",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=",            icon: "fas fa-tree",            logo: "canal-rural.png",     url2: "https://pelisjuanita.com/tv/canal-rural" },
+            { name: "HISTORY",        url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1",         icon: "fas fa-landmark",        logo: "history.png",         url2: "https://pelisjuanita.com/tv/history" },
+            { name: "HISTORY 2",      url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1",         icon: "fas fa-book",            logo: "history-2.png",       url2: "https://pelisjuanita.com/tv/history-2" },
+            { name: "WARNER",         url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1",         icon: "fas fa-ticket-alt",      logo: "warner.png",          url2: "https://pelisjuanita.com/tv/warner" },
+            { name: "TNT SERIES",     url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz",                icon: "fas fa-tv",              logo: "tnt-series.png",      url2: "https://pelisjuanita.com/tv/tnt-series" },
+            { name: "CINEMAX",        url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==",                icon: "fas fa-camera",          logo: "cinemax.png",         url2: "https://pelisjuanita.com/tv/cinemax" },
+            { name: "DISCOVERY H&H",  url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", icon: "fas fa-home", logo: "discovery-h-h.png",  url2: "https://pelisjuanita.com/tv/discovery-h-h" },
+            { name: "DISCOVERY",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=",            icon: "fas fa-globe",           logo: "discovery-channel.png", url2: "https://pelisjuanita.com/tv/discovery-channel" },
+            { name: "AXN",            url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=",                    icon: "fas fa-bolt",            logo: "axn.png",             url2: "https://pelisjuanita.com/tv/axn" },
+            { name: "FX",             url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==",                    icon: "fas fa-skull",           logo: "fx.png",              url2: "https://pelisjuanita.com/tv/fxhd" },
+            { name: "ANIMAL PLANET",  url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0",           icon: "fas fa-paw",             logo: "animal-planet.png",   url2: "https://pelisjuanita.com/tv/animal-planet" },
+            { name: "MTV",            url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1",             icon: "fas fa-music",           logo: "mtv.png",             url2: "https://pelisjuanita.com/tv/mtv" }
         ];
 
         // ===== FÚTBOL =====
@@ -676,10 +848,15 @@
         btnClosePlayer.onclick = closePlayer;
 
         // ===== CLICK EN CARD =====
-        function handleCardClick(url, name, isTrigger) {
-            if (isTrigger) { showFootball(); return; }
+        function handleCardClick(url, name, isTrigger, url2) {
+            if (isTrigger) { showFootballPanel(); return; }
             if (!url) return;
             const type = detectUrlType(url);
+            // Si tiene url2, mostrar selector de fuente (excepto TV EN VIVO, TV OP.2)
+            if (url2) {
+                showSourcePanel(url, url2, name, type);
+                return;
+            }
             if (type === "hls" || type === "dash") {
                 showModal(url, name);
             } else {
@@ -687,7 +864,128 @@
             }
         }
 
-        // ===== HTML DEL LOGO/ÍCONO (con lazy loading) =====
+        // ===== PANEL FLOTANTE FÚTBOL =====
+        const footballBackdrop = document.getElementById("football-backdrop");
+        const footballPanel    = document.getElementById("football-panel");
+
+        function showFootballPanel() {
+            // Construir botones dinámicamente
+            var btns = '';
+            footballOptions.forEach(function(opt, i) {
+                btns += '<button class="fp-btn" data-idx="' + i + '">' +
+                    '<i class="' + opt.icon + '"></i>' +
+                    opt.name +
+                    '</button>';
+            });
+            footballPanel.innerHTML = '<div id="football-panel-title"><i class="fas fa-futbol"></i> FÚTBOL — ELEGIR OPCIÓN</div>' +
+                btns + '<button id="fp-cancel">✕ Cancelar</button>';
+            footballPanel.classList.add("visible");
+            footballBackdrop.classList.add("visible");
+
+            Array.from(footballPanel.querySelectorAll('.fp-btn')).forEach(function(btn) {
+                btn.onclick = function() {
+                    var idx = parseInt(btn.getAttribute('data-idx'));
+                    closeFootballPanel();
+                    window.location.href = footballOptions[idx].url;
+                };
+            });
+            document.getElementById("fp-cancel").onclick = closeFootballPanel;
+            footballBackdrop.onclick = closeFootballPanel;
+        }
+
+        function closeFootballPanel() {
+            footballPanel.classList.remove("visible");
+            footballBackdrop.classList.remove("visible");
+        }
+
+        // ===== SELECTOR DE FUENTE CON CUENTA REGRESIVA =====
+        var sourcePanel     = document.getElementById("source-panel");
+        var sourceBackdrop  = document.getElementById("source-backdrop");
+        var srcBtn1         = document.getElementById("src-btn-1");
+        var srcBtn2         = document.getElementById("src-btn-2");
+        var srcCancel       = document.getElementById("src-cancel");
+        var srcCountdownBar = document.getElementById("source-countdown-bar");
+        var srcSecondsEl    = document.getElementById("source-seconds");
+        var srcPanelTitle   = document.getElementById("source-panel-title");
+        var srcTimer        = null;
+        var srcSeconds      = 6;
+        var srcUrl1Pending  = "";
+        var srcUrl2Pending  = "";
+        var srcNamePending  = "";
+        var srcTypePending  = "";
+
+        function showSourcePanel(url1, url2, name, type) {
+            srcUrl1Pending = url1;
+            srcUrl2Pending = url2;
+            srcNamePending = name;
+            srcTypePending = type;
+            srcPanelTitle.textContent = name;
+            srcSecondsEl.textContent  = "6";
+            srcSeconds = 6;
+            srcCountdownBar.style.transition = "none";
+            srcCountdownBar.style.width = "100%";
+            // Forzar reflow antes de activar la transición
+            void srcCountdownBar.offsetWidth;
+            srcCountdownBar.style.transition = "width 1s linear";
+            srcCountdownBar.style.width = (100 * 5 / 6) + "%";
+
+            sourcePanel.classList.add("visible");
+            sourceBackdrop.style.display = "block";
+
+            clearInterval(srcTimer);
+            srcTimer = setInterval(function() {
+                srcSeconds--;
+                srcSecondsEl.textContent = srcSeconds;
+                srcCountdownBar.style.width = (100 * Math.max(srcSeconds - 1, 0) / 6) + "%";
+                if (srcSeconds <= 0) {
+                    clearInterval(srcTimer);
+                    closeSourcePanel();
+                    goToSource(srcUrl1Pending, srcNamePending, srcTypePending);
+                }
+            }, 1000);
+        }
+
+        function closeSourcePanel() {
+            clearInterval(srcTimer);
+            sourcePanel.classList.remove("visible");
+            sourceBackdrop.style.display = "none";
+        }
+
+        function goToSource(url, name, type) {
+            if (type === "hls" || type === "dash") {
+                showModal(url, name);
+            } else {
+                window.location.href = url;
+            }
+        }
+
+        srcBtn1.onclick = function() {
+            clearInterval(srcTimer);
+            closeSourcePanel();
+            goToSource(srcUrl1Pending, srcNamePending, srcTypePending);
+        };
+        srcBtn2.onclick = function() {
+            clearInterval(srcTimer);
+            closeSourcePanel();
+            // Opción 2 es siempre web (pelisjuanita)
+            window.location.href = srcUrl2Pending;
+        };
+        srcCancel.onclick = closeSourcePanel;
+        sourceBackdrop.onclick = closeSourcePanel;
+
+        // ===== SUBMENÚ FÚTBOL (mantiene compatibilidad con el grid modo fútbol) =====
+        function showFootball() {
+            // Redirige al panel flotante en lugar del grid
+            showFootballPanel();
+        }
+
+        function goToMain() {
+            if (currentMode === "main") return;
+            currentMode = "main";
+            headerDiv.innerHTML = '<h1><i class="fas fa-tv"></i> MENU STPC TV <i class="fas fa-satellite-dish"></i></h1>';
+            backContainer.innerHTML = '';
+            renderGrid(channels);
+        }
         // OPTIMIZADO: loading="lazy" evita cargar logos fuera de pantalla al inicio
         function logoHtml(ch) {
             if (ch.logo) {
@@ -703,6 +1001,7 @@
             const html = list.map(function(ch) {
                 return '<div class="card locked" tabindex="0" ' +
                     'data-url="' + (ch.url || '') + '" ' +
+                    'data-url2="' + (ch.url2 || '') + '" ' +
                     'data-trigger="' + (ch.isTrigger ? "1" : "0") + '" ' +
                     'data-name="' + ch.name + '">' +
                     logoHtml(ch) +
@@ -716,34 +1015,17 @@
         function attachCardEvents(cards) {
             Array.from(cards).forEach(function(card) {
                 const url     = card.getAttribute('data-url');
+                const url2    = card.getAttribute('data-url2') || null;
                 const name    = card.getAttribute('data-name');
                 const trigger = card.getAttribute('data-trigger') === "1";
-                card.onclick = function() { handleCardClick(url, name, trigger); };
+                card.onclick = function() { handleCardClick(url, name, trigger, url2); };
                 card.onkeydown = function(e) {
                     if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        handleCardClick(url, name, trigger);
+                        handleCardClick(url, name, trigger, url2);
                     }
                 };
             });
-        }
-
-        // ===== SUBMENÚ FÚTBOL =====
-        function showFootball() {
-            if (currentMode === "football") return;
-            currentMode = "football";
-            headerDiv.innerHTML = '<h1><i class="fas fa-futbol"></i> MENU FUTBOL - OPCIONES <i class="fas fa-tv"></i></h1>';
-            backContainer.innerHTML = '<button class="back-button" id="btn-back-main"><i class="fas fa-arrow-left"></i> Volver al menú principal</button>';
-            document.getElementById("btn-back-main").onclick = goToMain;
-            renderGrid(footballOptions);
-        }
-
-        function goToMain() {
-            if (currentMode === "main") return;
-            currentMode = "main";
-            headerDiv.innerHTML = '<h1><i class="fas fa-tv"></i> MENU STPC TV <i class="fas fa-satellite-dish"></i></h1>';
-            backContainer.innerHTML = '';
-            renderGrid(channels);
         }
 
         // ===== INIT =====
