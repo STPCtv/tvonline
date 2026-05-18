@@ -4,566 +4,332 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0a">
-    <title>STPC TV — Canales en vivo</title>
+    <title>STPC TV</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <link rel="icon" href="logos/TV.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body{
-            background:#0a0a0a;
-            font-family:'Segoe UI',Roboto,Arial,sans-serif;
-            color:#fff;
-            min-height:100vh;
-            -webkit-tap-highlight-color:transparent;
-        }
-
-        body::before{
-            content:"";
-            position:fixed;
-            top:0;left:0;width:100%;height:100%;
-            background:url("fondo.jpg") no-repeat center center;
-            background-size:cover;
-            opacity:.5;
-            z-index:-1;
-            pointer-events:none;
+        body {
+            background: #0a0a0a;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
         }
 
-        .header{
-            text-align:center;
-            padding:20px 20px 18px;
-            background:rgba(0,0,0,.65);
-            border-bottom:1px solid rgba(255,152,0,.2);
-        }
-        .header-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:18px;}
-        .header-logo i{font-size:2.2rem;color:#ff9800;}
-        .header-logo h1{
-            font-size:1.9rem;font-weight:800;
-            background:linear-gradient(135deg,#ffaa33,#ff6600);
-            -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url("fondo.jpg") no-repeat center center;
+            background-size: cover;
+            opacity: .5;
+            z-index: -1;
+            pointer-events: none;
         }
 
-        .special-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:580px;margin:0 auto;}
-        .special-card{
-            background:linear-gradient(135deg,#1a1a2e,#16213e);
-            border-radius:16px;padding:16px 8px 14px;text-align:center;cursor:pointer;
-            border:2px solid rgba(255,152,0,.35);
-            display:flex;flex-direction:column;align-items:center;gap:8px;
-            transition:border-color .2s,box-shadow .2s;
-            -webkit-user-select:none;user-select:none;
+        /* ── LOGO / TÍTULO ── */
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 48px;
         }
-        .special-card:hover{border-color:#ff9800;box-shadow:0 6px 24px rgba(255,152,0,.25);}
-        .special-card:active{opacity:.8;}
-        .sc-logo{width:64px;height:42px;object-fit:contain;border-radius:6px;}
-        .sc-icon{font-size:28px;color:#ffaa33;}
-        .sc-name{font-size:11px;font-weight:700;color:#ffcc66;letter-spacing:.3px;}
-
-        .grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
-            gap:10px;
-            padding:16px 14px 60px;
-            max-width:1600px;
-            margin:0 auto;
+        .header-logo i {
+            font-size: 2.6rem;
+            color: #ff9800;
         }
-        .card{
-            background:#1a1a2e;
-            border-radius:14px;padding:13px 6px 18px;text-align:center;cursor:pointer;
-            border:2px solid rgba(255,255,255,.1);
-            box-shadow:0 2px 5px rgba(0,0,0,.3);
-            display:flex;flex-direction:column;align-items:center;gap:8px;
-            position:relative;
-            -webkit-user-select:none;user-select:none;
-        }
-        .card:hover{background:#2a2a4e;border-color:#ffaa33;}
-        .card:active{opacity:.8;}
-        .card:focus-visible{outline:3px solid #ff9800;outline-offset:2px;background:#2a2a4e;border-color:#ff9800;}
-
-        .card .logo-img{width:80px;height:50px;object-fit:contain;border-radius:6px;}
-        .card .logo-fallback{display:none;font-size:34px;color:#ffaa33;}
-        .card .logo-fallback.show{display:inline-block;}
-        .card span{font-size:11px;font-weight:600;word-break:break-word;line-height:1.3;}
-
-        .badge-vivo{
-            position:absolute;bottom:0;left:50%;
-            transform:translateX(-50%) translateY(50%);
-            background:#e53935;color:#fff;font-size:8.5px;font-weight:800;
-            padding:2px 8px;border-radius:10px;white-space:nowrap;
+        .header-logo h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffaa33, #ff6600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
         }
 
-        #modal-overlay{
-            display:none;position:fixed;inset:0;
-            background:rgba(0,0,0,.95);z-index:200;
-            align-items:center;justify-content:center;padding:14px;
-        }
-        #modal-overlay.visible{display:flex;}
-        #modal-box{
-            background:#0f0f24;border:1.5px solid rgba(255,152,0,.25);
-            border-radius:20px;width:100%;max-width:640px;max-height:92vh;
-            overflow-y:auto;display:flex;flex-direction:column;
+        /* ── GRID DE LAS 3 OPCIONES ── */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 620px;
+            padding: 0 20px;
         }
 
-        #modal-player-wrap{
-            width:100%;aspect-ratio:16/9;background:#000;
-            border-radius:18px 18px 0 0;overflow:hidden;position:relative;flex-shrink:0;
+        .menu-card {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 32px 12px 26px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid rgba(255, 152, 0, .35);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            transition: border-color .25s, box-shadow .25s, transform .18s;
+            -webkit-user-select: none;
+            user-select: none;
+            outline: none;
         }
-        #modal-video,#modal-iframe{width:100%;height:100%;border:none;background:#000;display:none;}
-        /* Deshabilitar controls nativos del video para evitar publicidad */
-        #modal-video{pointer-events:auto;}
-        
-        .player-ph{
-            position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-            background:#0a0a0a;color:#666;text-align:center;padding:20px;
+        .menu-card:hover,
+        .menu-card:focus-visible {
+            border-color: #ff9800;
+            box-shadow: 0 8px 32px rgba(255, 152, 0, .3);
+            transform: translateY(-3px);
         }
-        .player-ph i{font-size:3rem;color:#ff9800;}
-        .player-ph span{font-size:.88rem;}
-        .player-ph small{font-size:.7rem;color:#ffaa33;margin-top:5px;}
-        
-        #modal-close, #modal-fullscreen{
-            position:absolute;top:10px;background:rgba(0,0,0,.75);
-            border:none;color:#fff;width:36px;height:36px;border-radius:50%;
-            cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;
-            transition:background .2s;
-        }
-        #modal-close{right:10px;}
-        #modal-fullscreen{right:55px;}
-        #modal-close:hover{background:#cc3300;}
-        #modal-fullscreen:hover{background:#ff9800;}
-
-        .modal-info{display:flex;align-items:center;gap:13px;padding:15px 18px 10px;border-bottom:1px solid rgba(255,255,255,.07);}
-        .modal-info-logo{width:50px;height:34px;object-fit:contain;border-radius:5px;background:rgba(255,255,255,.04);padding:3px;flex-shrink:0;}
-        .modal-info-icon{font-size:1.9rem;color:#ffaa33;flex-shrink:0;}
-        .modal-info-text h2{font-size:1.05rem;font-weight:800;}
-        .modal-info-text p{font-size:.76rem;color:#777;margin-top:2px;}
-
-        .srv-label{padding:13px 18px 7px;font-size:.7rem;font-weight:800;color:#666;letter-spacing:1.5px;text-transform:uppercase;}
-        .srv-list{padding:0 14px 6px;display:flex;flex-direction:column;gap:7px;}
-        .srv-btn{
-            display:flex;align-items:center;gap:11px;
-            background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.07);
-            border-radius:11px;padding:13px 15px;color:#fff;
-            font-size:.88rem;font-weight:600;cursor:pointer;text-align:left;width:100%;
-        }
-        .srv-btn i{font-size:.85rem;flex-shrink:0;}
-        .srv-icon{color:#ffaa33;}
-        .stpc-icon{color:#4fc3f7;}
-        .ext-icon{color:#81c784;}
-        .srv-btn:hover{background:rgba(255,152,0,.1);border-color:#ff9800;}
-        .srv-btn.active{background:rgba(255,152,0,.18);border-color:#ff9800;color:#ffaa33;}
-        .srv-btn small{display:block;font-size:.68rem;color:#666;font-weight:400;margin-top:1px;}
-        .modal-tip{padding:9px 18px 16px;font-size:.76rem;color:#666;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
-        .modal-tip i{margin-right:3px;}
-
-        #football-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;align-items:center;justify-content:center;padding:14px;}
-        #football-overlay.visible{display:flex;}
-        #football-box{background:#0f0f24;border:1.5px solid rgba(255,152,0,.25);border-radius:20px;width:100%;max-width:420px;padding:24px 18px;}
-        #football-box h2{text-align:center;font-size:1.1rem;font-weight:800;color:#ffaa33;margin-bottom:16px;}
-        .fb-btn{
-            display:flex;align-items:center;gap:12px;
-            background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.07);
-            border-radius:11px;padding:13px 16px;color:#fff;font-size:.9rem;font-weight:600;
-            cursor:pointer;width:100%;margin-bottom:8px;
-        }
-        .fb-btn i{color:#ffaa33;}
-        .fb-btn:hover{background:rgba(255,152,0,.1);border-color:#ff9800;}
-        #football-close{background:none;border:none;color:#666;font-size:.85rem;cursor:pointer;display:block;margin:6px auto 0;padding:6px 16px;}
-
-        #toast{
-            position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
-            background:rgba(0,0,0,.88);color:#ffaa33;padding:9px 22px;
-            border-radius:30px;font-size:.83rem;font-weight:600;
-            display:none;z-index:9999;border:1px solid rgba(255,152,0,.3);white-space:nowrap;
+        .menu-card:active {
+            transform: scale(.96);
+            opacity: .85;
         }
 
-        ::-webkit-scrollbar{width:5px;}
-        ::-webkit-scrollbar-track{background:#111;}
-        ::-webkit-scrollbar-thumb{background:#ff9800;border-radius:3px;}
-
-        @media(max-width:600px){
-            .grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;padding:10px 9px 60px;}
-            .card .logo-img{width:64px;height:40px;}
-            .card span{font-size:10px;}
-            .header-logo h1{font-size:1.4rem;}
-            .special-grid{gap:8px;}
-            .sc-logo{width:52px;height:34px;}
-            .sc-name{font-size:10px;}
+        .mc-logo {
+            width: 80px;
+            height: 52px;
+            object-fit: contain;
+            border-radius: 8px;
         }
-        @media(min-width:1200px){
-            .grid{grid-template-columns:repeat(auto-fill,minmax(145px,1fr));}
+        .mc-icon {
+            font-size: 2.2rem;
+            color: #ffaa33;
+        }
+        .mc-name {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ffcc66;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            line-height: 1.3;
+        }
+
+        /* ── FÚTBOL OVERLAY ── */
+        #football-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.92);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+        }
+        #football-overlay.visible { display: flex; }
+        #football-box {
+            background: #0f0f24;
+            border: 1.5px solid rgba(255, 152, 0, .25);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px 18px;
+        }
+        #football-box h2 {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #ffaa33;
+            margin-bottom: 16px;
+        }
+        .fb-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,.04);
+            border: 1.5px solid rgba(255,255,255,.07);
+            border-radius: 11px;
+            padding: 13px 16px;
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .fb-btn i { color: #ffaa33; }
+        .fb-btn:hover { background: rgba(255,152,0,.1); border-color: #ff9800; }
+        #football-close {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: .85rem;
+            cursor: pointer;
+            display: block;
+            margin: 6px auto 0;
+            padding: 6px 16px;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,.88);
+            color: #ffaa33;
+            padding: 9px 22px;
+            border-radius: 30px;
+            font-size: .83rem;
+            font-weight: 600;
+            display: none;
+            z-index: 9999;
+            border: 1px solid rgba(255,152,0,.3);
+            white-space: nowrap;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #ff9800; border-radius: 3px; }
+
+        /* ── RESPONSIVE MÓVIL ── */
+        @media (max-width: 480px) {
+            .header-logo h1 { font-size: 1.7rem; }
+            .header-logo i  { font-size: 1.9rem; }
+            .header-logo    { margin-bottom: 32px; }
+            .menu-grid      { gap: 12px; padding: 0 14px; }
+            .menu-card      { padding: 24px 8px 20px; border-radius: 16px; }
+            .mc-logo        { width: 64px; height: 42px; }
+            .mc-icon        { font-size: 1.8rem; }
+            .mc-name        { font-size: 10px; }
+        }
+
+        /* ── TV / PANTALLA GRANDE ── */
+        @media (min-width: 900px) {
+            .menu-grid      { max-width: 740px; gap: 28px; }
+            .menu-card      { padding: 40px 16px 32px; border-radius: 24px; }
+            .mc-logo        { width: 100px; height: 66px; }
+            .mc-icon        { font-size: 2.6rem; }
+            .mc-name        { font-size: 14px; }
+            .header-logo h1 { font-size: 2.8rem; }
+            .header-logo i  { font-size: 3rem; }
+            .header-logo    { margin-bottom: 56px; }
         }
     </style>
 </head>
 <body>
 
-<div class="header">
+    <!-- LOGO -->
     <div class="header-logo">
         <i class="fas fa-satellite-dish"></i>
         <h1>STPC TV</h1>
     </div>
-    <div class="special-grid">
-        <div class="special-card" id="btn-tv-vivo">
-            <img class="sc-logo" src="logos/TV.png" alt="TV EN VIVO"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <i class="fas fa-play-circle sc-icon" style="display:none;"></i>
-            <span class="sc-name">TV EN VIVO</span>
+
+    <!-- MENÚ PRINCIPAL — 3 OPCIONES -->
+    <div class="menu-grid">
+
+        <div class="menu-card" id="btn-tv-vivo" tabindex="0" role="button" aria-label="TV en vivo">
+            <img class="mc-logo" src="logos/TV.png" alt="TV EN VIVO"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+            <i class="fas fa-play-circle mc-icon" style="display:none;"></i>
+            <span class="mc-name">TV EN VIVO</span>
         </div>
-        <div class="special-card" id="btn-futbol">
-            <img class="sc-logo" src="logos/futbol.png" alt="FÚTBOL"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <i class="fas fa-futbol sc-icon" style="display:none;"></i>
-            <span class="sc-name">FÚTBOL</span>
+
+        <div class="menu-card" id="btn-futbol" tabindex="0" role="button" aria-label="Fútbol">
+            <img class="mc-logo" src="logos/futbol.png" alt="FÚTBOL"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+            <i class="fas fa-futbol mc-icon" style="display:none;"></i>
+            <span class="mc-name">FÚTBOL</span>
         </div>
-        <div class="special-card" id="btn-tv-op2">
-            <img class="sc-logo" src="logos/TV2.png" alt="TV OP.2"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <i class="fas fa-search sc-icon" style="display:none;"></i>
-            <span class="sc-name">TV OP.2</span>
+
+        <div class="menu-card" id="btn-tv-op2" tabindex="0" role="button" aria-label="TV Opción 2">
+            <img class="mc-logo" src="logos/TV2.png" alt="TV OP.2"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+            <i class="fas fa-search mc-icon" style="display:none;"></i>
+            <span class="mc-name">TV OP.2</span>
+        </div>
+
+    </div>
+
+    <!-- FÚTBOL OVERLAY -->
+    <div id="football-overlay">
+        <div id="football-box">
+            <h2><i class="fas fa-futbol"></i>&nbsp; FÚTBOL — Elegí una opción</h2>
+            <div id="football-list"></div>
+            <button id="football-close">✕ Cerrar</button>
         </div>
     </div>
-</div>
 
-<div class="grid" id="grid"></div>
+    <div id="toast"></div>
 
-<!-- MODAL CANAL -->
-<div id="modal-overlay">
-    <div id="modal-box">
-        <div id="modal-player-wrap">
-            <button id="modal-close"><i class="fas fa-times"></i></button>
-            <button id="modal-fullscreen"><i class="fas fa-expand"></i></button>
-            <div class="player-ph" id="player-ph">
-                <i class="fas fa-play-circle"></i>
-                <span>Elegí un servidor para reproducir</span>
-                <small>🖥️ Usá el botón <i class="fas fa-expand"></i> (arriba a la derecha) para pantalla completa SIN PUBLICIDAD</small>
-            </div>
-            <video id="modal-video" playsinline webkit-playsinline></video>
-            <iframe id="modal-iframe" allow="autoplay; fullscreen" scrolling="no" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-presentation"></iframe>
-        </div>
-        <div class="modal-info">
-            <img id="modal-logo" class="modal-info-logo" src="" alt="" style="display:none;"
-                 onerror="this.style.display='none';document.getElementById('modal-icon').style.display='inline'">
-            <i id="modal-icon" class="fas fa-tv modal-info-icon" style="display:none;"></i>
-            <div class="modal-info-text">
-                <h2 id="modal-nombre"></h2>
-                <p id="modal-meta"></p>
-            </div>
-        </div>
-        <div class="srv-label">ELEGÍ UN SERVIDOR:</div>
-        <div class="srv-list" id="srv-list"></div>
-        <div class="modal-tip">
-            <i class="fas fa-shield-alt"></i> Consejos:
-            <span>✅ Servidores "STPC TV" = sin publicidad</span>
-            <span>🔵 Botón <i class="fas fa-expand"></i> = Pantalla completa limpia</span>
-            <span>⚠️ Si un servidor no carga, probá otro.</span>
-        </div>
-    </div>
-</div>
+    <script>
+    const FOOTBALL = [
+        {"nombre": "⚽ Fútbol Opción 1", "url": "https://alangulotv2.pl/"},
+        {"nombre": "⚽ Fútbol Opción 2", "url": "https://rojadirectaplay.com/"},
+        {"nombre": "⚽ Fútbol Opción 3", "url": "https://futbol-libre.su/"},
+        {"nombre": "⚽ Fútbol Opción 4", "url": "https://pelotalibretv.su/"},
+        {"nombre": "⚽ Fútbol Opción 5", "url": "https://pirlotv3.pl/index2.php"},
+        {"nombre": "⚽ Fútbol Opción 6", "url": "https://www.pelisjuanita.com/tv/agenda-deportiva"},
+        {"nombre": "⚽ Fútbol Opción 7", "url": "https://www.fctv33hd.pics/es"}
+    ];
 
-<!-- FÚTBOL -->
-<div id="football-overlay">
-    <div id="football-box">
-        <h2><i class="fas fa-futbol"></i>&nbsp; FÚTBOL — Elegí una opción</h2>
-        <div id="football-list"></div>
-        <button id="football-close">✕ Cerrar</button>
-    </div>
-</div>
+    const fbOvl    = document.getElementById("football-overlay");
+    const fbList   = document.getElementById("football-list");
+    const toast    = document.getElementById("toast");
+    let toastTimer = null;
 
-<div id="toast"></div>
+    function showToast(msg) {
+        toast.textContent = msg;
+        toast.style.display = "block";
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ toast.style.display = "none"; }, 2800);
+    }
 
-<script>
-const CANALES  = [{"id": "america", "nombre": "América TV", "pais": "Argentina", "categoria": "Variedad", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QW1lcmljYVRW", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QW1lcmljYVRW", "open_tab": false}, {"nombre": "América TV", "url": "https://pelisjuanita.com/tv/americatv.html?1", "open_tab": false}, {"nombre": "CvatTV 2", "url": "https://pelisjuanita.com/tv/cvatt2.html?get=QW1lcmljYVRW", "open_tab": false}], "stpc_logo": "america.png", "stpc_icon": "fas fa-globe-americas", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW", "stpc_name": "AMERICA"}, {"id": "argentinisima", "nombre": "Argentinísima", "pais": "Argentina", "categoria": "Variedad", "url": "https://pelisjuanita.com/tv/f.html?get=aHR0cHM6Ly9zdHJlYW0xLnNlcnNhdC5jb20vaGxzL2FyZ2VudGluaXNpbWEubTN1OA==", "servidores": [{"nombre": "HLS Direct", "url": "https://pelisjuanita.com/tv/f.html?get=aHR0cHM6Ly9zdHJlYW0xLnNlcnNhdC5jb20vaGxzL2FyZ2VudGluaXNpbWEubTN1OA==", "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QXJnZW50aW5pc2ltYQ", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "c5n", "nombre": "C5N", "pais": "Argentina", "categoria": "Noticias", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QzVO", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=QzVO", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QzVO", "open_tab": false}], "stpc_logo": "c5n.png", "stpc_icon": "fas fa-chart-line", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=QzVO", "stpc_name": "C5N"}, {"id": "canal-26", "nombre": "Canal 26", "pais": "Argentina", "categoria": "Noticias", "url": "https://pelisjuanita.com/tv/cvatt.html?get=MjZfVFZfSEQ", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=MjZfVFZfSEQ", "open_tab": false}], "stpc_logo": "canal-26.png", "stpc_icon": "fas fa-broadcast-tower", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ", "stpc_name": "CANAL 26"}, {"id": "canal-nueve", "nombre": "Canal 9", "pais": "Argentina", "categoria": "Variedad", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2FuYWw5", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2FuYWw5", "open_tab": false}], "stpc_logo": "canal-nueve.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "canal-rural", "nombre": "Canal Rural", "pais": "Argentina", "categoria": "Noticias", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2FuYWxfUnVyYWw=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2FuYWxfUnVyYWw=", "open_tab": false}], "stpc_logo": "canal-rural.png", "stpc_icon": "fas fa-tree", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=", "stpc_name": "LA RURAL"}, {"id": "cine-ar", "nombre": "CineAR", "pais": "Argentina", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SU5DQUFfVHY=", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SU5DQUFfVHY=", "open_tab": false}], "stpc_logo": "cine-ar.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "cinecanal", "nombre": "Cinecanal", "pais": "Argentina", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2luZWNhbmFsSEQ=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2luZWNhbmFsSEQ=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.ksdjugfsddeports.com/embed2/cinecanal.html", "open_tab": true}, {"nombre": "Servidor 3", "url": "https://embed.ksdjugfsddeports.com/embed/cinecanal.html", "open_tab": true}], "stpc_logo": "cinecanal.png", "stpc_icon": "fas fa-video", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1", "stpc_name": "CINECANAL"}, {"id": "ciudad-magazine", "nombre": "Ciudad Magazine", "pais": "Argentina", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TWFnYXppbmU=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TWFnYXppbmU=", "open_tab": false}, {"nombre": "HLS Direct", "url": "https://pelisjuanita.com/tv/f.html?get=https://live-01-07-ciudad.vodgc.net/live-01-07-ciudad.vodgc.net/index.m3u8", "open_tab": false}], "stpc_logo": "ciudad-magazine.png", "stpc_icon": "fas fa-magic", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1", "stpc_name": "CDAD MAG"}, {"id": "cm", "nombre": "CM", "pais": "Argentina", "categoria": "Musicales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q00=", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q00=", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "cronica", "nombre": "Crónica TV", "pais": "Argentina", "categoria": "Noticias", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q3JvbmljYVRW", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q3JvbmljYVRW", "open_tab": false}], "stpc_logo": "cronica.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "deportv", "nombre": "DeporTV", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGVwb3JUVkhE", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGVwb3JUVkhE", "open_tab": false}], "stpc_logo": "deportv.png", "stpc_icon": "fas fa-running", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE", "stpc_name": "DEPORT TV"}, {"id": "diputados-tv", "nombre": "Diputados TV", "pais": "Argentina", "categoria": "Noticias", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlwdXRhZG9zX1RW", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlwdXRhZG9zX1RW", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "directv-plus", "nombre": "DirecTV Sports+", "pais": "Argentina", "categoria": "Deportes", "url": "https://embed.ksdjugfsddeports.com/embed2/directvsportsplus.html", "servidores": [{"nombre": "Servidor 1", "url": "https://embed.ksdjugfsddeports.com/embed2/directvsportsplus.html", "open_tab": true}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canales.php?stream=dsportsplus", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/3/96", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/96", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "directv-sports", "nombre": "DirecTV Sports", "pais": "Argentina", "categoria": "Deportes", "url": "https://embed.ksdjugfsddeports.com/embed2/directvsports.html", "servidores": [{"nombre": "Servidor 1", "url": "https://embed.ksdjugfsddeports.com/embed2/directvsports.html", "open_tab": true}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canales.php?stream=dsports", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/3/94", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/94", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "directv-sports-2", "nombre": "DirecTV Sports 2", "pais": "Argentina", "categoria": "Deportes", "url": "https://la14hd.com/vivo/canales.php?stream=dsports2", "servidores": [{"nombre": "La14HD 1", "url": "https://la14hd.com/vivo/canales.php?stream=dsports2", "open_tab": false}, {"nombre": "BolaLoca 2", "url": "https://bolaloca.my/player/3/95", "open_tab": false}, {"nombre": "Servidor 3", "url": "https://streamx10.cloud/global2.php?channel=dsports2", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "el-gourmet", "nombre": "El Gourmet", "pais": "Argentina", "categoria": "Variedad", "url": "https://pelisjuanita.com/tv/cvatt.html?get=R291cm1ldA==", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=R291cm1ldA==", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/elgourmet.html", "open_tab": true}], "stpc_logo": "el-gourmet.png", "stpc_icon": "fas fa-utensils", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1", "stpc_name": "EL GOURMET"}, {"id": "el-trece", "nombre": "El Trece", "pais": "Argentina", "categoria": "Variedad", "url": "https://pelisjuanita.com/tv/f.html?get=aHR0cHM6Ly9saXZldHJ4MDEudm9kZ2MubmV0L2VsdHJlY2V0di9pbmRleC5tM3U4", "servidores": [{"nombre": "HLS Direct", "url": "https://pelisjuanita.com/tv/f.html?get=aHR0cHM6Ly9saXZldHJ4MDEudm9kZ2MubmV0L2VsdHJlY2V0di9pbmRleC5tM3U4", "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QXJ0ZWFySEQ&lang=1", "open_tab": false}, {"nombre": "Servidor 3", "url": "https://embed.saohgdasregions.fun/embed2/eltrece.html", "open_tab": true}, {"nombre": "Servidor 4", "url": "https://embed.ksdjugfsddeports.com/embed/eltrece.html", "open_tab": true}], "stpc_logo": "el-trece.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "encuentro", "nombre": "Encuentro", "pais": "Argentina", "categoria": "Variedad", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RW5jdWVudHJv", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RW5jdWVudHJv", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "espn", "nombre": "ESPN", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjJIRA", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjJIRA", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canal.php?stream=espnar", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/87", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/87", "open_tab": false}, {"nombre": "StreamTP 5", "url": "https://streamtpnew.com/global1.php?stream=espn", "open_tab": false}], "stpc_logo": "espn.png", "stpc_icon": "fas fa-bolt", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA", "stpc_name": "ESPN"}, {"id": "espn-2", "nombre": "ESPN 2", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjJfQXJn", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjJfQXJn", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/espn2.html", "open_tab": true}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/88", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/88", "open_tab": false}, {"nombre": "StreamTP 5", "url": "https://streamtpnew.com/global1.php?stream=espn2", "open_tab": false}], "stpc_logo": "espn-2.png", "stpc_icon": "fas fa-signal", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1", "stpc_name": "ESPN 2"}, {"id": "espn-3", "nombre": "ESPN 3", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjM", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjM", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canal.php?stream=espn3", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/89", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/89", "open_tab": false}], "stpc_logo": "espn-3.png", "stpc_icon": "fas fa-satellite", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1", "stpc_name": "ESPN 3"}, {"id": "espn-4", "nombre": "ESPN 4", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjJIRA", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjJIRA", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canal.php?stream=espn4", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/90", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/90", "open_tab": false}], "stpc_logo": "espn-4.png", "stpc_icon": "fas fa-wifi", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1", "stpc_name": "ESPN 4"}, {"id": "espn-5", "nombre": "ESPN 5", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjQ=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RVNQTjQ=", "open_tab": false}, {"nombre": "EmbedMe 2", "url": "https://embedme.click/player/1/91", "open_tab": false}, {"nombre": "BolaLoca 3", "url": "https://bolaloca.my/player/3/91", "open_tab": false}], "stpc_logo": "espn-5.png", "stpc_icon": "fas fa-star", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1", "stpc_name": "ESPN 5"}, {"id": "espn-6", "nombre": "ESPN 6", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRzM19VWQ==", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRzM19VWQ==", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canal.php?stream=espn6", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/92", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/92", "open_tab": false}], "stpc_logo": "espn-6.png", "stpc_icon": "fas fa-flag", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", "stpc_name": "ESPN 6"}, {"id": "espn-7", "nombre": "ESPN 7", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canal.php?stream=espn7", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/93", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/93", "open_tab": false}], "stpc_logo": "espn-7.png", "stpc_icon": "fas fa-stopwatch", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", "stpc_name": "ESPN 7"}, {"id": "espn-premium", "nombre": "ESPN Premium", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canal.php?stream=espnpremium", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/76", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/76", "open_tab": false}], "stpc_logo": "espn-premium.png", "stpc_icon": "fas fa-crown", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", "stpc_name": "ESPN PREMIUM"}, {"id": "europa-europa", "nombre": "Europa Europa", "pais": "Argentina", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RXVyb3BhX0V1cm9wYQ", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RXVyb3BhX0V1cm9wYQ", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "film-arts", "nombre": "Film Arts", "pais": "Argentina", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RmlsbV9BcnRz", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RmlsbV9BcnRz", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/goldenpremier2.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "fox-sports", "nombre": "Fox Sports", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRz", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRz", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canales.php?stream=foxsports", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/78", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/1/78", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "fox-sports-2", "nombre": "Fox Sports 2", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRzMkhE", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRzMkhE", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canales.php?stream=foxsports2", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/79", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/79", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "fox-sports-3", "nombre": "Fox Sports 3", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRzM0hE", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rm94U3BvcnRzM0hE", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canales.php?stream=foxsports3", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/80", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/80", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "garage-tv", "nombre": "Garage TV", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/f.html?get=//stream1.sersat.com/hls/garagetv.m3u8", "servidores": [{"nombre": "HLS Direct", "url": "https://pelisjuanita.com/tv/f.html?get=//stream1.sersat.com/hls/garagetv.m3u8", "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RWxfR2FyYWdl", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "ln", "nombre": "La Nación+", "pais": "Argentina", "categoria": "Noticias", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TGFfTmFjaW9u", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TGFfTmFjaW9u", "open_tab": false}], "stpc_logo": "ln.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "metro", "nombre": "Metro", "pais": "Argentina", "categoria": "Noticias", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TWV0cm8", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TWV0cm8", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "paka-paka", "nombre": "Paka Paka", "pais": "Argentina", "categoria": "Infantiles", "url": "https://pelisjuanita.com/tv/cvatt.html?get=UEFLQV9QQUtB", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=UEFLQV9QQUtB", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "quiero", "nombre": "Quiero Música", "pais": "Argentina", "categoria": "Musicales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=UXVpZXJvX0hE", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=UXVpZXJvX0hE", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "space", "nombre": "Space", "pais": "Argentina", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=U3BhY2U=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=U3BhY2U=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/space.html", "open_tab": true}, {"nombre": "Servidor 3", "url": "https://embed.ksdjugfsddeports.com/embed/space.html", "open_tab": true}], "stpc_logo": "space.png", "stpc_icon": "fas fa-rocket", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1", "stpc_name": "SPACE"}, {"id": "star-channel", "nombre": "Star Channel", "pais": "Argentina", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rk9YSEQ=&lang=1", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Rk9YSEQ=&lang=1", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/starchannel.html", "open_tab": true}, {"nombre": "Servidor 3", "url": "https://embed.ksdjugfsddeports.com/embed/starchannel.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "telefe", "nombre": "Telefe", "pais": "Argentina", "categoria": "Variedad", "url": "https://pelisjuanita.com/tv/f.html?get=aHR0cHM6Ly9tZHN0cm0uY29tL2xpdmUtc3RyZWFtLXBsYXlsaXN0LzY5ZTBmYjY1MGQ5ZTNlYjUzNDBjZGQ1Yy5tM3U4", "servidores": [{"nombre": "STPC TV", "url": "https://pelisjuanita.com/tv/telefe", "is_stpc": true, "open_tab": false}, {"nombre": "HLS Direct", "url": "https://pelisjuanita.com/tv/f.html?get=aHR0cHM6Ly9tZHN0cm0uY29tL2xpdmUtc3RyZWFtLXBsYXlsaXN0LzY5ZTBmYjY1MGQ5ZTNlYjUzNDBjZGQ1Yy5tM3U4", "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VGVsZWZlSEQ=", "open_tab": false}, {"nombre": "Servidor 3", "url": "https://pelisjuanita.com/tv/telefe.php", "open_tab": false}], "stpc_logo": "telefe.png", "stpc_icon": "fas fa-broadcast-tower", "stpc_url": "https://pelisjuanita.com/tv/telefe", "stpc_name": "TELEFE"}, {"id": "telemax", "nombre": "Telemax", "pais": "Argentina", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/f.html?get=https://stream-gtlc.telecentro.net.ar/hls/telemaxhls/main.m3u8", "servidores": [{"nombre": "HLS Direct", "url": "https://pelisjuanita.com/tv/f.html?get=https://stream-gtlc.telecentro.net.ar/hls/telemaxhls/main.m3u8", "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VGVsZW1heA", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "tn", "nombre": "TN", "pais": "Argentina", "categoria": "Noticias", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VG9kb05vdGljaWFz", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VG9kb05vdGljaWFz", "open_tab": false}], "stpc_logo": "tn.png", "stpc_icon": "fas fa-newspaper", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz", "stpc_name": "TN"}, {"id": "tnt-sports", "nombre": "TNT Sports", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VE5UX1Nwb3J0c19IRA", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VE5UX1Nwb3J0c19IRA", "open_tab": false}, {"nombre": "StreamTP 2", "url": "https://streamtpnew.com/global1.php?stream=tntsports", "open_tab": false}, {"nombre": "EmbedMe 3", "url": "https://embedme.click/player/1/75", "open_tab": false}, {"nombre": "BolaLoca 4", "url": "https://bolaloca.my/player/3/75", "open_tab": false}, {"nombre": "La14HD 5", "url": "https://la14hd.com/vivo/canal.php?stream=tntsports", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "tnt-sports-premium", "nombre": "TNT Sports Premium", "pais": "Argentina", "categoria": "Deportes", "url": "https://la14hd.com/vivo/canal.php?stream=tntsportschile", "servidores": [{"nombre": "La14HD 1", "url": "https://la14hd.com/vivo/canal.php?stream=tntsportschile", "open_tab": false}, {"nombre": "EmbedMe 2", "url": "https://embedme.click/player/1/83", "open_tab": false}, {"nombre": "BolaLoca 3", "url": "https://bolaloca.my/player/2/83", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "tooncast", "nombre": "Tooncast", "pais": "Argentina", "categoria": "Infantiles", "url": "https://embed.ksdjugfsddeports.com/embed2/tooncast.html", "servidores": [{"nombre": "Servidor 1", "url": "https://embed.ksdjugfsddeports.com/embed2/tooncast.html", "open_tab": true}, {"nombre": "Servidor 2", "url": "https://embed.ksdjugfsddeports.com/embed/tooncast.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "tv-publica", "nombre": "TV Pública", "pais": "Argentina", "categoria": "Noticias", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2FuYWw3", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2FuYWw3", "open_tab": false}, {"nombre": "StreamTP 3", "url": "https://streamtpnew.com/global1.php?stream=tv_publica", "open_tab": false}], "stpc_logo": "tv-publica.png", "stpc_icon": "fas fa-university", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3", "stpc_name": "TV PUBLICA"}, {"id": "tyc-sports", "nombre": "TyC Sports", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VHlDU3BvcnQ", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VHlDU3BvcnQ", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canales.php?stream=tycsports", "open_tab": false}, {"nombre": "Servidor 3", "url": "https://embed.ksdjugfsddeports.com/embed2/tycsports.html", "open_tab": true}, {"nombre": "EmbedMe 4", "url": "https://embedme.click/player/1/77", "open_tab": false}, {"nombre": "BolaLoca 5", "url": "https://bolaloca.my/player/3/77", "open_tab": false}], "stpc_logo": "tyc-sports.png", "stpc_icon": "fas fa-medal", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ", "stpc_name": "TYC SPORTS"}, {"id": "tyc-sports-internacional", "nombre": "TyC Internacional", "pais": "Argentina", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VHlDX0ludGVybmFjaW9uYWw=", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VHlDX0ludGVybmFjaW9uYWw=", "open_tab": false}, {"nombre": "La14HD 2", "url": "https://la14hd.com/vivo/canales.php?stream=tycinternacional", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "volver", "nombre": "Volver", "pais": "Argentina", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Vm9sdmVy&lang=1", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Vm9sdmVy&lang=1", "open_tab": false}], "stpc_logo": "volver.png", "stpc_icon": "fas fa-film", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1", "stpc_name": "VOLVER"}, {"id": "a-e", "nombre": "A&E", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QUVIRA==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QUVIRA==", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.ksdjugfsddeports.com/embed2/discoveryaye.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "adult-swim", "nombre": "Adult Swim", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QWR1bHRfU3dpbQ==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QWR1bHRfU3dpbQ==", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "amc", "nombre": "AMC", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QU1D", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QU1D", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/amc.html", "open_tab": true}, {"nombre": "Servidor 3", "url": "https://embed.ksdjugfsddeports.com/embed/amc.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "amc-series", "nombre": "AMC Series", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QU1DX1Nlcmllcw==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QU1DX1Nlcmllcw==", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "animal-planet", "nombre": "Animal Planet", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QW5pbWFsUGxhbmV0", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QW5pbWFsUGxhbmV0", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/animalplanet.html", "open_tab": true}], "stpc_logo": "animal-planet.png", "stpc_icon": "fas fa-paw", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0", "stpc_name": "ANIMAL PLANET"}, {"id": "axn", "nombre": "AXN", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QVhOSEQ=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=QVhOSEQ=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/axn.html", "open_tab": true}], "stpc_logo": "axn.png", "stpc_icon": "fas fa-bolt", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=", "stpc_name": "AXN"}, {"id": "cartoon-network", "nombre": "Cartoon Network", "pais": "Estados Unidos", "categoria": "Infantiles", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2FydG9vbk5ldHdvcms=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2FydG9vbk5ldHdvcms=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/cartoonnetwork.html", "open_tab": true}], "stpc_logo": "cartoon-network.png", "stpc_icon": "fas fa-bug", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=", "stpc_name": "CARTOON NETW"}, {"id": "cartoonito", "nombre": "Cartoonito", "pais": "Estados Unidos", "categoria": "Infantiles", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Qm9vbWVyYW5n&lang=1", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Qm9vbWVyYW5n&lang=1", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/cartoonito.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "cinemax", "nombre": "Cinemax", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2luZW1heA==", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Q2luZW1heA==", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.ksdjugfsddeports.com/embed2/cinemax.html", "open_tab": true}], "stpc_logo": "cinemax.png", "stpc_icon": "fas fa-camera", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==", "stpc_name": "CINEMAX"}, {"id": "discovery-channel", "nombre": "Discovery Channel", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5SEQ=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5SEQ=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/discoverychannel.html", "open_tab": true}], "stpc_logo": "discovery-channel.png", "stpc_icon": "fas fa-globe", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=", "stpc_name": "DISCOVERY"}, {"id": "discovery-h-h", "nombre": "Discovery H&H", "pais": "Estados Unidos", "categoria": "Reality", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/discoveryhyh.html", "open_tab": true}], "stpc_logo": "discovery-h-h.png", "stpc_icon": "fas fa-home", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", "stpc_name": "DISCOVERY H&H"}, {"id": "discovery-id", "nombre": "Discovery ID", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SUQ=&lang=1", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SUQ=&lang=1", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/idinvestigation.html", "open_tab": true}], "stpc_logo": "discovery-channel.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "discovery-kids", "nombre": "Discovery Kids", "pais": "Estados Unidos", "categoria": "Infantiles", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/discoverykids.html", "open_tab": true}], "stpc_logo": "discovery-channel.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "discovery-science", "nombre": "Discovery Science", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5X1NjaWVuY2U=", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5X1NjaWVuY2U=", "open_tab": false}], "stpc_logo": "discovery-channel.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "discovery-theater", "nombre": "Discovery Theater", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VGhlYXRlcl9IRA==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VGhlYXRlcl9IRA==", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/discoverytheater.html", "open_tab": true}], "stpc_logo": "discovery-channel.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "discovery-tlc", "nombre": "TLC", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VExD", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VExD", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/discoverytlc.html", "open_tab": true}], "stpc_logo": "discovery-channel.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "discovery-turbo", "nombre": "Discovery Turbo", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=", "open_tab": false}], "stpc_logo": "discovery-turbo.png", "stpc_icon": "fas fa-microscope", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=", "stpc_name": "DISCOVERY TV"}, {"id": "discovery-world", "nombre": "Discovery World", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5X1dvcmxkX0hE", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzY292ZXJ5X1dvcmxkX0hE", "open_tab": false}], "stpc_logo": "discovery-channel.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "disney-channel", "nombre": "Disney Channel", "pais": "Estados Unidos", "categoria": "Infantiles", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzbmV5Q2hhbm5lbEhE", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzbmV5Q2hhbm5lbEhE", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/disneychannel.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "disney-jr", "nombre": "Disney Jr.", "pais": "Estados Unidos", "categoria": "Infantiles", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzbmV5SnI=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RGlzbmV5SnI=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/disneyjr.html", "open_tab": true}], "stpc_logo": "disney-jr.png", "stpc_icon": "fas fa-dragon", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=", "stpc_name": "DISNEY JR"}, {"id": "dreamworks", "nombre": "DreamWorks", "pais": "Estados Unidos", "categoria": "Infantiles", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RHJlYW13b3Jrcw==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RHJlYW13b3Jrcw==", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "fxhd", "nombre": "FX HD", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RlhIRA==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=RlhIRA==", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/fx.html", "open_tab": true}], "stpc_logo": "fx.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "golf-channel", "nombre": "Golf Channel", "pais": "Estados Unidos", "categoria": "Deportes", "url": "https://pelisjuanita.com/tv/cvatt.html?get=R29sZl9DaGFubmVs", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=R29sZl9DaGFubmVs", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "hbo", "nombre": "HBO", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPSEQ=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPSEQ=", "open_tab": false}], "stpc_logo": "hbo.png", "stpc_icon": "fas fa-crown", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1", "stpc_name": "HBO"}, {"id": "hbo-2", "nombre": "HBO 2", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPXzI=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPXzI=", "open_tab": false}], "stpc_logo": "hbo-2.png", "stpc_icon": "fas fa-circle", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1", "stpc_name": "HBO 2"}, {"id": "hbo-family", "nombre": "HBO Family", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX0ZhbWlseQ==", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX0ZhbWlseQ==", "open_tab": false}], "stpc_logo": "hbo-family.png", "stpc_icon": "fas fa-users", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1", "stpc_name": "HBO FAMILY"}, {"id": "hbo-mundi", "nombre": "HBO Mundi", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX011bmRp", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX011bmRp", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "hbo-plus", "nombre": "HBO Plus", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX1BsdXM=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX1BsdXM=", "open_tab": false}], "stpc_logo": "hbo-plus.png", "stpc_icon": "fas fa-plus-circle", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1", "stpc_name": "HBO PLUS"}, {"id": "hbo-pop", "nombre": "HBO Pop", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX1BPUA==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX1BPUA==", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "hbo-signature", "nombre": "HBO Signature", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX1NpZ25hdHVyZQ==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX1NpZ25hdHVyZQ==", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "hbo-xtreme", "nombre": "HBO Xtreme", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX0V4dHJlbWU=", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SEJPX0V4dHJlbWU=", "open_tab": false}], "stpc_logo": "hbo-xtreme.png", "stpc_icon": "fas fa-fire", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1", "stpc_name": "HBO EXTREME"}, {"id": "history", "nombre": "History", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SGlzdG9yeUhE", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SGlzdG9yeUhE", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/history.html", "open_tab": true}], "stpc_logo": "history.png", "stpc_icon": "fas fa-landmark", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1", "stpc_name": "HISTORY"}, {"id": "history-2", "nombre": "History 2", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SGlzdG9yeV8y", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=SGlzdG9yeV8y", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/history2.html", "open_tab": true}], "stpc_logo": "history-2.png", "stpc_icon": "fas fa-book", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1", "stpc_name": "HISTORY 2"}, {"id": "mtv", "nombre": "MTV", "pais": "Estados Unidos", "categoria": "Musicales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TVRWX0hE", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TVRWX0hE", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/mtv.html", "open_tab": true}], "stpc_logo": "mtv.png", "stpc_icon": "fas fa-music", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1", "stpc_name": "MTV"}, {"id": "national-geographic", "nombre": "National Geographic", "pais": "Estados Unidos", "categoria": "Documentales", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TmF0R2VvSEQ=&lang=1", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=TmF0R2VvSEQ=&lang=1", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/natgeo.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "nick", "nombre": "Nickelodeon", "pais": "Estados Unidos", "categoria": "Infantiles", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Tmlja2Vsb2Rlb24=", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Tmlja2Vsb2Rlb24=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/nick.html", "open_tab": true}], "stpc_logo": "nick.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "nick-jr", "nombre": "Nick Jr.", "pais": "Estados Unidos", "categoria": "Infantiles", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Tmlja19Kcg==", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=Tmlja19Kcg==", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/nickjr.html", "open_tab": true}], "stpc_logo": "nick-jr.png", "stpc_icon": "fas fa-baby", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=", "stpc_name": "NICK JR"}, {"id": "paramount-network", "nombre": "Paramount Network", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=UGFyYW1vdW50", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=UGFyYW1vdW50", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/paramountchannel.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "sony-channel", "nombre": "Sony Channel", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=U29ueUhE", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=U29ueUhE", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.ksdjugfsddeports.com/embed2/sony.html", "open_tab": true}], "stpc_logo": "sony.png", "stpc_icon": "fas fa-tv", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1", "stpc_name": "SONY"}, {"id": "studio-universal", "nombre": "Studio Universal", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=U3R1ZGlvX1VuaXZlcnNhbA==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=U3R1ZGlvX1VuaXZlcnNhbA==", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/studiouniversal.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "tcm", "nombre": "TCM", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VENN", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VENN", "open_tab": false}], "stpc_logo": "tcm.png", "stpc_icon": "fas fa-film", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1", "stpc_name": "TCM"}, {"id": "tnt-hd", "nombre": "TNT HD", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VE5UX0hEX0FyZw==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VE5UX0hEX0FyZw==", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.ksdjugfsddeports.com/embed2/tnt.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "tnt-novelas", "nombre": "TNT Novelas", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VJTS&lang=1", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VJTS&lang=1", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/tntnovelas.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "tnt-series", "nombre": "TNT Series", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VE5UU2VyaWVz", "servidores": [{"nombre": "STPC TV", "url": "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz", "is_stpc": true, "open_tab": false}, {"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VE5UU2VyaWVz", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.ksdjugfsddeports.com/embed2/tntseries.html", "open_tab": true}], "stpc_logo": "tnt-series.png", "stpc_icon": "fas fa-tv", "stpc_url": "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz", "stpc_name": "TNT SERIES"}, {"id": "universal-cinema", "nombre": "Universal Cinema", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX0NpbmVtYQ==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX0NpbmVtYQ==", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "universal-comedy", "nombre": "Universal Comedy", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX0NvbWVkeQ==", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX0NvbWVkeQ==", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "universal-crime", "nombre": "Universal Crime", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=dW5pdmVyc2FsX0NyaW1l", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=dW5pdmVyc2FsX0NyaW1l", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "universal-premiere", "nombre": "Universal Premiere", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX1ByZW1pZXJl", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX1ByZW1pZXJl", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "universal-reality", "nombre": "Universal Reality", "pais": "Estados Unidos", "categoria": "Reality", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX1JlYWxpdHk=", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX1JlYWxpdHk=", "open_tab": false}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "universal-tv", "nombre": "Universal TV", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX0NoYW5uZWxfSEQ=", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=VW5pdmVyc2FsX0NoYW5uZWxfSEQ=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.saohgdasregions.fun/embed2/universalchannel.html", "open_tab": true}], "stpc_logo": null, "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}, {"id": "warner", "nombre": "Warner Channel", "pais": "Estados Unidos", "categoria": "Películas y series", "url": "https://pelisjuanita.com/tv/cvatt.html?get=V2FybmVySEQ=", "servidores": [{"nombre": "CvatTV", "url": "https://pelisjuanita.com/tv/cvatt.html?get=V2FybmVySEQ=", "open_tab": false}, {"nombre": "Servidor 2", "url": "https://embed.ksdjugfsddeports.com/embed2/warnerchannel.html", "open_tab": true}], "stpc_logo": "warner.png", "stpc_icon": "fas fa-tv", "stpc_url": null, "stpc_name": null}];
-const FOOTBALL = [{"nombre": "⚽ Fútbol Opción 1", "url": "https://alangulotv2.pl/"}, {"nombre": "⚽ Fútbol Opción 2", "url": "https://rojadirectaplay.com/"}, {"nombre": "⚽ Fútbol Opción 3", "url": "https://futbol-libre.su/"}, {"nombre": "⚽ Fútbol Opción 4", "url": "https://pelotalibretv.su/"}, {"nombre": "⚽ Fútbol Opción 5", "url": "https://pirlotv3.pl/index2.php"}, {"nombre": "⚽ Fútbol Opción 6", "url": "https://www.pelisjuanita.com/tv/agenda-deportiva"}, {"nombre": "⚽ Fútbol Opción 7", "url": "https://www.fctv33hd.pics/es"}];
-const BASE_IMG = "https://zonahack.com.ar/img/";
+    /* ── TV EN VIVO ── */
+    document.getElementById("btn-tv-vivo").onclick = function() {
+        location.href = "https://pelisjuanita.com/tv/";
+    };
 
-const gridEl      = document.getElementById("grid");
-const modalOvl    = document.getElementById("modal-overlay");
-const modalNombre = document.getElementById("modal-nombre");
-const modalMeta   = document.getElementById("modal-meta");
-const modalLogo   = document.getElementById("modal-logo");
-const modalIcon   = document.getElementById("modal-icon");
-const srvList     = document.getElementById("srv-list");
-const modalClose  = document.getElementById("modal-close");
-const modalVideo  = document.getElementById("modal-video");
-const modalIframe = document.getElementById("modal-iframe");
-const playerPh    = document.getElementById("player-ph");
-const fbOvl       = document.getElementById("football-overlay");
-const fbList      = document.getElementById("football-list");
-const toast       = document.getElementById("toast");
-const fullscreenBtn = document.getElementById("modal-fullscreen");
+    /* ── TV OP.2 ── */
+    document.getElementById("btn-tv-op2").onclick = function() {
+        location.href = "https://www.cxtvenvivo.com/busqueda/?query=argentina";
+    };
 
-let hlsInstance = null;
-let activeSrv   = null;
-let toastTimer  = null;
-let hlsReady    = false;
-
-// Pantalla completa manual (SIN publicidad)
-function toggleFullscreen() {
-    const playerWrap = document.getElementById('modal-player-wrap');
-    if (!playerWrap) return;
-    
-    if (!document.fullscreenElement) {
-        playerWrap.requestFullscreen().catch(err => {
-            showToast("⚠️ Pantalla completa no disponible: " + err.message);
+    /* ── FÚTBOL ── */
+    document.getElementById("btn-futbol").onclick = function() {
+        var html = "";
+        for (var i = 0; i < FOOTBALL.length; i++) {
+            html += "<button class=\"fb-btn\" data-url=\"" + FOOTBALL[i].url + "\">"
+                  + "<i class=\"fas fa-futbol\"></i> " + FOOTBALL[i].nombre
+                  + "</button>";
+        }
+        fbList.innerHTML = html;
+        fbList.querySelectorAll(".fb-btn").forEach(function(btn) {
+            btn.onclick = function() { location.href = btn.getAttribute("data-url"); };
         });
-    } else {
-        document.exitFullscreen();
-    }
-}
-
-if (fullscreenBtn) {
-    fullscreenBtn.onclick = function(e) {
-        e.stopPropagation();
-        toggleFullscreen();
+        fbOvl.classList.add("visible");
     };
-}
 
-function showToast(msg){
-    toast.textContent=msg; toast.style.display="block";
-    clearTimeout(toastTimer);
-    toastTimer=setTimeout(function(){ toast.style.display="none"; }, 2800);
-}
-
-function ensureHls(cb){
-    if(hlsReady || window.Hls){ hlsReady=true; cb(); return; }
-    var s=document.createElement("script");
-    s.src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js";
-    s.onload=function(){ hlsReady=true; cb(); };
-    s.onerror=function(){ cb(new Error("hls error")); };
-    document.head.appendChild(s);
-}
-
-function detectDeviceProfile(){
-    var cores = navigator.hardwareConcurrency || 2;
-    var ram   = navigator.deviceMemory       || 1;
-    var score = 0;
-    if(cores >= 6)      score += 3;
-    else if(cores >= 4) score += 2;
-    else if(cores >= 2) score += 1;
-    if(ram >= 4)        score += 2;
-    else if(ram >= 2)   score += 1;
-    if(score >= 4) return "high";
-    if(score >= 2) return "mid";
-    return "low";
-}
-
-function buildHlsConfig(profile){
-    if(profile === "low") return {
-        enableWorker:false, lowLatencyMode:false,
-        maxBufferLength:10, maxMaxBufferLength:20,
-        capLevelToPlayerSize:true, startLevel:0,
-        abrEwmaDefaultEstimate:500000
+    /* ── Cerrar fútbol ── */
+    document.getElementById("football-close").onclick = function() {
+        fbOvl.classList.remove("visible");
     };
-    if(profile === "mid") return {
-        enableWorker:false, lowLatencyMode:false,
-        maxBufferLength:20, maxMaxBufferLength:40,
-        capLevelToPlayerSize:true, startLevel:-1,
-        abrEwmaDefaultEstimate:1500000
+    fbOvl.onclick = function(e) {
+        if (e.target === fbOvl) fbOvl.classList.remove("visible");
     };
-    return {
-        enableWorker:false, lowLatencyMode:true,
-        maxBufferLength:30, maxMaxBufferLength:60,
-        capLevelToPlayerSize:true, startLevel:-1,
-        abrEwmaDefaultEstimate:5000000
-    };
-}
 
-function detType(url){
-    var u=url.toLowerCase().split("?")[0];
-    if(u.indexOf(".m3u8")>-1) return "hls";
-    if(u.indexOf(".mpd")>-1)  return "dash";
-    return "iframe";
-}
-
-function stopPlayer(){
-    if(hlsInstance){ hlsInstance.destroy(); hlsInstance=null; }
-    modalVideo.pause();
-    modalVideo.removeAttribute("src");
-    modalVideo.load();
-    modalVideo.style.display="none";
-    modalIframe.src="about:blank";
-    modalIframe.style.display="none";
-    playerPh.style.display="flex";
-}
-
-function playServer(url, openTab){
-    stopPlayer();
-
-    if(openTab){
-        window.open(url, "_blank", "noopener");
-        showToast("📺 Abriendo canal en nueva pestaña...");
-        return;
-    }
-
-    var type = detType(url);
-
-    if(type === "hls"){
-        ensureHls(function(err){
-            if(err){ showToast("⚠ Error cargando reproductor"); return; }
-            var profile = detectDeviceProfile();
-            if(Hls.isSupported()){
-                var cfg = buildHlsConfig(profile);
-                hlsInstance = new Hls(cfg);
-                hlsInstance.loadSource(url);
-                hlsInstance.attachMedia(modalVideo);
-                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function(){
-                    modalVideo.play();
-                    var label = profile==="low"  ? "🟡 Modo ahorro"
-                              : profile==="mid"  ? "🟢 Modo balanceado"
-                              :                   "🔵 Modo HD";
-                    showToast("▶ Reproduciendo — "+label);
-                });
-                hlsInstance.on(Hls.Events.ERROR, function(e,d){
-                    if(d.fatal) showToast("⚠ Error de stream, probá otro servidor");
-                });
-                playerPh.style.display="none";
-                modalVideo.style.display="block";
-            } else if(modalVideo.canPlayType("application/vnd.apple.mpegurl")){
-                playerPh.style.display="none";
-                modalVideo.style.display="block";
-                modalVideo.src=url; modalVideo.play();
+    /* ── Teclado / mando TV (Enter o Space activa el botón seleccionado) ── */
+    document.querySelectorAll(".menu-card").forEach(function(card) {
+        card.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                card.click();
             }
         });
-    } else {
-        playerPh.style.display="none";
-        modalIframe.style.display="block";
-        modalIframe.src=url;
-    }
-}
+    });
 
-function openModal(canal){
-    stopPlayer();
-    activeSrv=null;
-    modalNombre.textContent = canal.nombre;
-    modalMeta.textContent   = canal.pais+" · "+canal.categoria;
-
-    if(canal.stpc_logo){
-        modalLogo.src="logos/"+canal.stpc_logo;
-        modalLogo.style.display="block"; modalIcon.style.display="none";
-        modalLogo.onerror=function(){
-            this.src=BASE_IMG+canal.id+".png";
-            this.onerror=function(){
-                this.style.display="none";
-                modalIcon.className=(canal.stpc_icon||"fas fa-tv")+" modal-info-icon";
-                modalIcon.style.display="inline";
-            };
-        };
-    } else {
-        modalLogo.src=BASE_IMG+canal.id+".png";
-        modalLogo.style.display="block"; modalIcon.style.display="none";
-        modalLogo.onerror=function(){
-            this.style.display="none";
-            modalIcon.className="fas fa-tv modal-info-icon";
-            modalIcon.style.display="inline";
-        };
-    }
-
-    var html="";
-    for(var i=0;i<canal.servidores.length;i++){
-        var s=canal.servidores[i];
-        var isStpc = s.is_stpc || s.nombre==="STPC TV";
-        var isExt  = s.open_tab;
-        var iconCls = isStpc ? "fas fa-satellite-dish stpc-icon"
-                    : isExt  ? "fas fa-external-link-alt ext-icon"
-                    :          "fas fa-play srv-icon";
-        var sub = isStpc ? "✅ Sin publicidad - Recomendado"
-                : isExt  ? "🔗 Abre en nueva pestaña"
-                :          "⚙️ Servidor "+(i+1);
-        html+="<button class=\"srv-btn\" data-url=\""+s.url+"\" data-tab=\""+(isExt?"1":"0")+"\">"
-            +"<i class=\""+iconCls+"\"></i>"
-            +"<div>"+s.nombre+"<small>"+sub+"</small></div>"
-            +"</button>";
-    }
-    srvList.innerHTML=html;
-
-    var btns=srvList.querySelectorAll(".srv-btn");
-    for(var j=0;j<btns.length;j++){
-        (function(btn){
-            btn.onclick=function(){
-                if(activeSrv) activeSrv.classList.remove("active");
-                btn.classList.add("active"); activeSrv=btn;
-                playServer(btn.getAttribute("data-url"), btn.getAttribute("data-tab")==="1");
-            };
-        })(btns[j]);
-    }
-
-    if(btns.length) btns[0].click();
-
-    modalOvl.classList.add("visible");
-    document.body.style.overflow="hidden";
-}
-
-function closeModal(){
-    stopPlayer();
-    modalOvl.classList.remove("visible");
-    document.body.style.overflow="";
-}
-
-modalClose.onclick=closeModal;
-modalOvl.onclick=function(e){ if(e.target===modalOvl) closeModal(); };
-
-function logoHtml(canal){
-    if(canal.stpc_logo){
-        var zhFb=BASE_IMG+canal.id+".png";
-        return "<img class=\"logo-img\" loading=\"lazy\" src=\"logos/"+canal.stpc_logo+"\" alt=\""+canal.nombre+"\" "
-             + "onerror=\"if(!this.dataset.t){this.dataset.t=1;this.src='"+zhFb+"';}else{this.style.display='none';this.nextElementSibling.classList.add('show');}\"> "
-             + "<i class=\"logo-fallback "+(canal.stpc_icon||"fas fa-tv")+"\"  ></i>";
-    }
-    var zhSrc=BASE_IMG+canal.id+".png";
-    return "<img class=\"logo-img\" loading=\"lazy\" src=\""+zhSrc+"\" alt=\""+canal.nombre+"\" "
-         + "onerror=\"this.style.display='none';this.nextElementSibling.classList.add('show');\">"
-         + "<i class=\"logo-fallback fas fa-tv\"></i>";
-}
-
-function renderGrid(lista){
-    var html="";
-    for(var i=0;i<lista.length;i++){
-        var c=lista[i];
-        html+="<div class=\"card\" tabindex=\"0\" data-id=\""+c.id+"\">"
-            +logoHtml(c)
-            +"<span>"+c.nombre+"</span>"
-            +"<span class=\"badge-vivo\">▶ EN VIVO</span>"
-            +"</div>";
-    }
-    gridEl.innerHTML=html;
-
-    var cards=gridEl.querySelectorAll(".card");
-    for(var j=0;j<cards.length;j++){
-        (function(card){
-            var id=card.getAttribute("data-id");
-            var canal=null;
-            for(var k=0;k<CANALES.length;k++){ if(CANALES[k].id===id){canal=CANALES[k];break;} }
-            card.onclick=function(){ openModal(canal); };
-            card.onkeydown=function(e){
-                if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openModal(canal); }
-            };
-        })(cards[j]);
-    }
-}
-
-document.getElementById("btn-tv-vivo").onclick=function(){ location.href="https://pelisjuanita.com/tv/"; };
-document.getElementById("btn-tv-op2").onclick=function(){ location.href="https://www.cxtvenvivo.com/busqueda/?query=argentina"; };
-document.getElementById("btn-futbol").onclick=function(){
-    var html="";
-    for(var i=0;i<FOOTBALL.length;i++){
-        html+="<button class=\"fb-btn\" data-url=\""+FOOTBALL[i].url+"\"><i class=\"fas fa-futbol\"></i> "+FOOTBALL[i].nombre+"</button>";
-    }
-    fbList.innerHTML=html;
-    var fbs=fbList.querySelectorAll(".fb-btn");
-    for(var j=0;j<fbs.length;j++){
-        (function(btn){ btn.onclick=function(){ location.href=btn.getAttribute("data-url"); }; })(fbs[j]);
-    }
-    fbOvl.classList.add("visible");
-};
-document.getElementById("football-close").onclick=function(){ fbOvl.classList.remove("visible"); };
-fbOvl.onclick=function(e){ if(e.target===fbOvl) fbOvl.classList.remove("visible"); };
-
-renderGrid(CANALES);
-
-window.addEventListener("pageshow",function(e){ if(e.persisted) window.location.reload(); });
-
-if(window.console) console.log("✅ STPC TV v5.1 - Pantalla completa sin publicidad activada | Servidores STPC = más limpios");
-</script>
+    window.addEventListener("pageshow", function(e) {
+        if (e.persisted) window.location.reload();
+    });
+    </script>
 </body>
 </html>
