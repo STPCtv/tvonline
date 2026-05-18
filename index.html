@@ -4,332 +4,757 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0a">
-    <title>STPC TV</title>
+    <title>MENU STPC TV - Canales en vivo</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <link rel="icon" href="logos/TV.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- HLS.js y dash.js se cargan dinámicamente solo cuando se necesitan -->
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background: #0a0a0a;
             font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            -webkit-tap-highlight-color: transparent;
-            overflow: hidden;
+            color: white;
         }
 
+        /* OPTIMIZADO: sin background-attachment:fixed para evitar re-renders en Android/TvBro */
         body::before {
             content: "";
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: url("fondo.jpg") no-repeat center center;
             background-size: cover;
-            opacity: .5;
+            opacity: 0.6;
             z-index: -1;
             pointer-events: none;
         }
 
-        /* ── LOGO / TÍTULO ── */
-        .header-logo {
+        .overlay {
+            background: rgba(0, 0, 0, 0.75);
+            min-height: 100vh;
+            padding: 20px 20px 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 14px;
-            margin-bottom: 48px;
-        }
-        .header-logo i {
-            font-size: 2.6rem;
-            color: #ff9800;
-        }
-        .header-logo h1 {
-            font-size: 2.4rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffaa33, #ff6600);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 1px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        /* ── GRID DE LAS 3 OPCIONES ── */
-        .menu-grid {
+        h1 i { font-size: 2rem; color: #ff9800; }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #1e2a3a;
+            color: #ffaa33;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .back-button:hover { background: #2a3a4a; color: #ffcc66; }
+
+        .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            width: 100%;
-            max-width: 620px;
-            padding: 0 20px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            padding: 5px;
+            max-width: 1600px;
+            margin: 0 auto;
         }
 
-        .menu-card {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 20px;
-            padding: 32px 12px 26px;
+        .card {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 14px 6px;
             text-align: center;
             cursor: pointer;
-            border: 2px solid rgba(255, 152, 0, .35);
+            font-weight: 600;
+            font-size: 13px;
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 14px;
-            transition: border-color .25s, box-shadow .25s, transform .18s;
-            -webkit-user-select: none;
-            user-select: none;
-            outline: none;
+            gap: 10px;
         }
-        .menu-card:hover,
-        .menu-card:focus-visible {
-            border-color: #ff9800;
-            box-shadow: 0 8px 32px rgba(255, 152, 0, .3);
-            transform: translateY(-3px);
-        }
-        .menu-card:active {
-            transform: scale(.96);
-            opacity: .85;
-        }
+        .card i { font-size: 34px; color: #ffaa33; }
+        .card span { display: block; font-weight: 600; word-break: break-word; }
 
-        .mc-logo {
+        /* Logos PNG con fallback a ícono FA */
+        .card .logo-img {
             width: 80px;
-            height: 52px;
+            height: 50px;
             object-fit: contain;
-            border-radius: 8px;
+            border-radius: 6px;
         }
-        .mc-icon {
-            font-size: 2.2rem;
-            color: #ffaa33;
-        }
-        .mc-name {
+        .card .logo-fallback { display: none; font-size: 34px; color: #ffaa33; }
+        .card .logo-fallback.show { display: inline-block; }
+
+        .card:hover { background: #2a2a4e; border-color: #ffaa33; }
+        .card:focus-visible { outline: 3px solid #ff9800; outline-offset: 2px; background: #2a2a4e; border-color: #ff9800; }
+
+        .locked { position: relative; }
+        .locked::before {
+            content: "★";
+            position: absolute;
+            top: 6px; left: 10px;
             font-size: 12px;
-            font-weight: 800;
-            color: #ffcc66;
-            letter-spacing: .5px;
-            text-transform: uppercase;
-            line-height: 1.3;
+            color: #ffcc00;
+            z-index: 1;
         }
 
-        /* ── FÚTBOL OVERLAY ── */
-        #football-overlay {
+        /* ===== MODAL DE OPCIONES ===== */
+        #modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,.92);
-            z-index: 300;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
             align-items: center;
             justify-content: center;
-            padding: 14px;
         }
-        #football-overlay.visible { display: flex; }
-        #football-box {
-            background: #0f0f24;
-            border: 1.5px solid rgba(255, 152, 0, .25);
+        #modal-overlay.visible { display: flex; }
+
+        #modal-box {
+            background: #1a1a2e;
+            border: 2px solid #ff9800;
             border-radius: 20px;
-            width: 100%;
+            padding: 28px 24px;
             max-width: 420px;
-            padding: 24px 18px;
-        }
-        #football-box h2 {
+            width: 92%;
             text-align: center;
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #ffaa33;
-            margin-bottom: 16px;
-        }
-        .fb-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255,255,255,.04);
-            border: 1.5px solid rgba(255,255,255,.07);
-            border-radius: 11px;
-            padding: 13px 16px;
-            color: #fff;
-            font-size: .9rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 8px;
-        }
-        .fb-btn i { color: #ffaa33; }
-        .fb-btn:hover { background: rgba(255,152,0,.1); border-color: #ff9800; }
-        #football-close {
-            background: none;
-            border: none;
-            color: #666;
-            font-size: .85rem;
-            cursor: pointer;
-            display: block;
-            margin: 6px auto 0;
-            padding: 6px 16px;
         }
 
-        #toast {
+        #modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffaa33;
+            margin-bottom: 8px;
+        }
+
+        #modal-subtitle {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 22px;
+        }
+
+        .modal-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            background: #12122a;
+            border: 1.5px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            padding: 14px 18px;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .modal-btn i { font-size: 1.6rem; color: #ffaa33; min-width: 30px; }
+        .modal-btn:hover { background: #2a2a4e; border-color: #ffaa33; }
+        .modal-btn small { display: block; font-size: 0.72rem; color: #aaa; font-weight: 400; margin-top: 2px; }
+
+        .modal-cancel {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-top: 6px;
+            padding: 6px 16px;
+        }
+        .modal-cancel:hover { color: #ccc; }
+
+        /* ===== REPRODUCTOR INLINE ===== */
+        #player-overlay {
+            display: none;
             position: fixed;
-            bottom: 22px;
+            inset: 0;
+            background: #000;
+            z-index: 200;
+            flex-direction: column;
+        }
+        #player-overlay.visible { display: flex; }
+
+        #player-topbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.7);
+            flex-shrink: 0;
+        }
+
+        #player-channel-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffaa33;
+            flex: 1;
+        }
+
+        #btn-close-player {
+            background: #cc3300;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #btn-close-player:hover { background: #ff4400; }
+
+        #player-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            position: relative;
+        }
+
+        #main-video {
+            width: 100%;
+            height: 100%;
+            max-height: calc(100vh - 60px);
+            background: #000;
+            outline: none;
+        }
+
+        #player-status {
+            position: absolute;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,.88);
+            background: rgba(0,0,0,0.75);
             color: #ffaa33;
-            padding: 9px 22px;
-            border-radius: 30px;
-            font-size: .83rem;
-            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
             display: none;
-            z-index: 9999;
-            border: 1px solid rgba(255,152,0,.3);
             white-space: nowrap;
         }
 
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #111; }
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
         ::-webkit-scrollbar-thumb { background: #ff9800; border-radius: 3px; }
 
-        /* ── RESPONSIVE MÓVIL ── */
-        @media (max-width: 480px) {
-            .header-logo h1 { font-size: 1.7rem; }
-            .header-logo i  { font-size: 1.9rem; }
-            .header-logo    { margin-bottom: 32px; }
-            .menu-grid      { gap: 12px; padding: 0 14px; }
-            .menu-card      { padding: 24px 8px 20px; border-radius: 16px; }
-            .mc-logo        { width: 64px; height: 42px; }
-            .mc-icon        { font-size: 1.8rem; }
-            .mc-name        { font-size: 10px; }
+        @media (min-width: 1400px) {
+            .grid { grid-template-columns: repeat(8, minmax(135px, 1fr)); gap: 14px; }
+            .card i { font-size: 38px; }
+            .card span { font-size: 14px; }
         }
-
-        /* ── TV / PANTALLA GRANDE ── */
-        @media (min-width: 900px) {
-            .menu-grid      { max-width: 740px; gap: 28px; }
-            .menu-card      { padding: 40px 16px 32px; border-radius: 24px; }
-            .mc-logo        { width: 100px; height: 66px; }
-            .mc-icon        { font-size: 2.6rem; }
-            .mc-name        { font-size: 14px; }
-            .header-logo h1 { font-size: 2.8rem; }
-            .header-logo i  { font-size: 3rem; }
-            .header-logo    { margin-bottom: 56px; }
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+            .card { padding: 10px 4px; }
+            .card i { font-size: 26px; }
+            .card span { font-size: 11px; }
+            h1 { font-size: 1.4rem; }
+            .back-button { padding: 6px 16px; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
-
-    <!-- LOGO -->
-    <div class="header-logo">
-        <i class="fas fa-satellite-dish"></i>
-        <h1>STPC TV</h1>
+    <div class="overlay">
+        <div id="dynamic-header">
+            <h1><i class="fas fa-tv"></i> MENU STPC TV <i class="fas fa-satellite-dish"></i></h1>
+        </div>
+        <div id="back-button-container" style="min-height:52px;"></div>
+        <div class="grid" id="grid"></div>
     </div>
 
-    <!-- MENÚ PRINCIPAL — 3 OPCIONES -->
-    <div class="menu-grid">
-
-        <div class="menu-card" id="btn-tv-vivo" tabindex="0" role="button" aria-label="TV en vivo">
-            <img class="mc-logo" src="logos/TV.png" alt="TV EN VIVO"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-            <i class="fas fa-play-circle mc-icon" style="display:none;"></i>
-            <span class="mc-name">TV EN VIVO</span>
+    <!-- MODAL: elegir cómo abrir -->
+    <div id="modal-overlay">
+        <div id="modal-box">
+            <div id="modal-title"></div>
+            <div id="modal-subtitle"></div>
+            <button class="modal-btn" id="btn-inline">
+                <i class="fas fa-play-circle"></i>
+                <div>
+                    Reproducir aquí
+                    <small>Reproductor embebido en esta página</small>
+                </div>
+            </button>
+            <button class="modal-btn" id="btn-mxplayer">
+                <i class="fas fa-mobile-alt"></i>
+                <div>
+                    Abrir en MX Player
+                    <small>Lanza la app instalada en tu TV Box</small>
+                </div>
+            </button>
+            <button class="modal-btn" id="btn-vlc">
+                <i class="fas fa-play-circle"></i>
+                <div>
+                    Abrir en VLC
+                    <small>Alternativa gratuita a MX Player</small>
+                </div>
+            </button>
+            <button class="modal-btn" id="btn-browser">
+                <i class="fas fa-globe"></i>
+                <div>
+                    Abrir en browser
+                    <small>Misma pestaña, sin acumular tabs</small>
+                </div>
+            </button>
+            <button class="modal-cancel" id="btn-cancel-modal">✕ Cancelar</button>
         </div>
-
-        <div class="menu-card" id="btn-futbol" tabindex="0" role="button" aria-label="Fútbol">
-            <img class="mc-logo" src="logos/futbol.png" alt="FÚTBOL"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-            <i class="fas fa-futbol mc-icon" style="display:none;"></i>
-            <span class="mc-name">FÚTBOL</span>
-        </div>
-
-        <div class="menu-card" id="btn-tv-op2" tabindex="0" role="button" aria-label="TV Opción 2">
-            <img class="mc-logo" src="logos/TV2.png" alt="TV OP.2"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-            <i class="fas fa-search mc-icon" style="display:none;"></i>
-            <span class="mc-name">TV OP.2</span>
-        </div>
-
     </div>
 
-    <!-- FÚTBOL OVERLAY -->
-    <div id="football-overlay">
-        <div id="football-box">
-            <h2><i class="fas fa-futbol"></i>&nbsp; FÚTBOL — Elegí una opción</h2>
-            <div id="football-list"></div>
-            <button id="football-close">✕ Cerrar</button>
+    <!-- REPRODUCTOR INLINE -->
+    <div id="player-overlay">
+        <div id="player-topbar">
+            <i class="fas fa-satellite-dish" style="color:#ffaa33;font-size:1.2rem;"></i>
+            <span id="player-channel-name">Canal</span>
+            <button id="btn-close-player"><i class="fas fa-times"></i> CERRAR</button>
+        </div>
+        <div id="player-wrap">
+            <video id="main-video" controls autoplay playsinline></video>
+            <div id="player-status"></div>
         </div>
     </div>
-
-    <div id="toast"></div>
 
     <script>
-    const FOOTBALL = [
-        {"nombre": "⚽ Fútbol Opción 1", "url": "https://alangulotv2.pl/"},
-        {"nombre": "⚽ Fútbol Opción 2", "url": "https://rojadirectaplay.com/"},
-        {"nombre": "⚽ Fútbol Opción 3", "url": "https://futbol-libre.su/"},
-        {"nombre": "⚽ Fútbol Opción 4", "url": "https://pelotalibretv.su/"},
-        {"nombre": "⚽ Fútbol Opción 5", "url": "https://pirlotv3.pl/index2.php"},
-        {"nombre": "⚽ Fútbol Opción 6", "url": "https://www.pelisjuanita.com/tv/agenda-deportiva"},
-        {"nombre": "⚽ Fútbol Opción 7", "url": "https://www.fctv33hd.pics/es"}
-    ];
+        // ===== CANALES PRINCIPALES =====
+        // CORREGIDO: logos agregados para los 8 canales que faltaban
+        const channels = [
+            { name: "TV EN VIVO",     url: "https://pelisjuanita.com/tv/",                                               icon: "fas fa-play-circle",     logo: "TV.png" },
+            { name: "FUTBOL",         url: "",                                                                             icon: "fas fa-futbol",          logo: "futbol.png",        isTrigger: true },
+            { name: "TV OP.2",        url: "https://www.cablevisionhd.com/",                        icon: "fas fa-search",          logo: "TV2.png" },
+            { name: "TELEFE",         url: "https://pelisjuanita.com/tv/telefe",                                          icon: "fas fa-broadcast-tower", logo: "telefe.png" },
+            { name: "CANAL 13",       url: "https://dots.bestleague.world/cvatt.html?get=QXJ0ZWFySEQ",                   icon: "fas fa-chalkboard",      logo: "el-trece.png" },
+            { name: "AMERICA",        url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYVRW",                  icon: "fas fa-globe-americas",  logo: "america.png" },
+            { name: "TN",             url: "https://dots.bestleague.world/cvatt.html?get=VG9kb05vdGljaWFz",              icon: "fas fa-newspaper",       logo: "tn.png" },
+            { name: "LA NACION+",     url: "https://dots.bestleague.world/cvatt.html?get=TGFfTmFjaW9u",                 icon: "fas fa-landmark",        logo: "ln.png" },
+            { name: "CRONICA",        url: "https://dots.bestleague.world/cvatt.html?get=Q3JvbmljYVRW",                 icon: "fas fa-clock",           logo: "cronica.png" },
+            { name: "A24",            url: "https://dots.bestleague.world/cvatt.html?get=QW1lcmljYTI0",                 icon: "fas fa-microphone-alt",  logo: "a24.png" },
+            { name: "C5N",            url: "https://dots.bestleague.world/cvatt.html?get=QzVO",                          icon: "fas fa-chart-line",      logo: "c5n.png" },
+            { name: "TV PUBLICA",     url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw3",                      icon: "fas fa-university",      logo: "tv-publica.png" },
+            { name: "EL NUEVE",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWw5",                      icon: "fas fa-hashtag",         logo: "canal-nueve.png" },
+            { name: "CANAL 26",       url: "https://dots.bestleague.world/cvatt.html?get=MjZfVFZfSEQ",                  icon: "fas fa-broadcast-tower", logo: "canal-26.png" },
+            { name: "TYC SPORTS",     url: "https://dots.bestleague.world/cvatt.html?get=VHlDU3BvcnQ",                  icon: "fas fa-medal",           logo: "tyc-sports.png" },
+            { name: "DEPORT TV",      url: "https://dots.bestleague.world/cvatt.html?get=RGVwb3JUVkhE",                 icon: "fas fa-running",         logo: "deportv.png" },
+            { name: "ESPN",           url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJIRA",                   icon: "fas fa-bolt",            logo: "espn.png" },
+            { name: "ESPN PREMIUM",   url: "https://dots.bestleague.world/cvatt.html?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE", icon: "fas fa-crown",          logo: "espn-premium.png" },
+            { name: "ESPN 2",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjJfQXJn&lang=1",         icon: "fas fa-signal",          logo: "espn-2.png" },
+            { name: "ESPN 3",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjM&lang=1",               icon: "fas fa-satellite",       logo: "espn-3.png" },
+            { name: "ESPN 4",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTkhE&lang=1",              icon: "fas fa-wifi",            logo: "espn-4.png" },
+            { name: "ESPN 5",         url: "https://dots.bestleague.world/cvatt.html?get=RVNQTjQ=&lang=1",              icon: "fas fa-star",            logo: "espn-5.png" },
+            { name: "ESPN 6",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzM19VWQ==&lang=1", icon: "fas fa-flag",            logo: "espn-6.png" },
+            { name: "ESPN 7",         url: "https://dots.bestleague.world/cvatt.html?get=Rm94U3BvcnRzMl9VWQ==&lang=1", icon: "fas fa-stopwatch",       logo: "espn-7.png" },
+            { name: "VOLVER",         url: "https://dots.bestleague.world/cvatt.html?get=Vm9sdmVy&lang=1",              icon: "fas fa-film",            logo: "volver.png" },
+            { name: "EL GOURMET",     url: "https://dots.bestleague.world/cvatt.html?get=R291cm1ldA==&lang=1",          icon: "fas fa-utensils",        logo: "el-gourmet.png" },
+            { name: "CARTOON NETW",   url: "https://dots.bestleague.world/cvatt.html?get=Q2FydG9vbk5ldHdvcms=",        icon: "fas fa-bug",             logo: "cartoon-network.png" },
+            { name: "NICKELODEON",    url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",             icon: "fas fa-smile",           logo: "nick.png" },
+            { name: "NICK JR",        url: "https://dots.bestleague.world/cvatt.html?get=Tmlja2Vsb2Rlb24=",             icon: "fas fa-baby",            logo: "nick-jr.png" },
+            { name: "DISNEY JR",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5X0tpZHM=",        icon: "fas fa-dragon",          logo: "disney-jr.png" },
+            { name: "SPACE",          url: "https://dots.bestleague.world/cvatt.html?get=U3BhY2U=&lang=1",              icon: "fas fa-rocket",          logo: "space.png" },
+            { name: "DISCOVERY TV",   url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5VHVyYm8=",        icon: "fas fa-microscope",      logo: "discovery-turbo.png" },
+            { name: "HBO PLUS",       url: "https://dots.bestleague.world/cvatt.html?get=SEJPX1BsdXM=&lang=1",          icon: "fas fa-plus-circle",     logo: "hbo-plus.png" },
+            { name: "CDAD MAG",       url: "https://dots.bestleague.world/cvatt.html?get=TWFnYXppbmU=&lang=1",          icon: "fas fa-magic",           logo: "ciudad-magazine.png" },
+            { name: "HBO EXTREME",    url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0V4dHJlbWU=&lang=1",     icon: "fas fa-fire",            logo: "hbo-xtreme.png" },
+            { name: "CINE ARG",       url: "https://dots.bestleague.world/cvatt.html?get=QXJnZW50aW5pc2ltYQ",           icon: "fas fa-film",            logo: "cine-ar.png" },
+            { name: "SONY",           url: "https://dots.bestleague.world/cvatt.html?get=U29ueUhE&lang=1",              icon: "fas fa-tv",              logo: "sony.png" },
+            { name: "HBO 2",          url: "https://dots.bestleague.world/cvatt.html?get=SEJPXzI=&lang=1",              icon: "fas fa-circle",          logo: "hbo-2.png" },
+            { name: "HBO FAMILY",     url: "https://dots.bestleague.world/cvatt.html?get=SEJPX0ZhbWlseQ==&lang=1",     icon: "fas fa-users",           logo: "hbo-family.png" },
+            { name: "HBO",            url: "https://dots.bestleague.world/cvatt.html?get=SEJPSEQ=&lang=1",              icon: "fas fa-crown",           logo: "hbo.png" },
+            { name: "CINECANAL",      url: "https://dots.bestleague.world/cvatt.html?get=Q2luZWNhbmFsSEQ=&lang=1",     icon: "fas fa-video",           logo: "cinecanal.png" },
+            { name: "TCM",            url: "https://dots.bestleague.world/cvatt.html?get=VENN&lang=1",                  icon: "fas fa-film",            logo: "tcm.png" },
+            { name: "LA RURAL",       url: "https://dots.bestleague.world/cvatt.html?get=Q2FuYWxfUnVyYWw=",            icon: "fas fa-tree",            logo: "canal-rural.png" },
+            { name: "HISTORY",        url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeUhE&lang=1",         icon: "fas fa-landmark",        logo: "history.png" },
+            { name: "HISTORY 2",      url: "https://dots.bestleague.world/cvatt.html?get=SGlzdG9yeV8y&lang=1",         icon: "fas fa-book",            logo: "history-2.png" },
+            { name: "WARNER",         url: "https://dots.bestleague.world/cvatt.html?get=V2FybmVySEQ=&lang=1",         icon: "fas fa-ticket-alt",      logo: "warner.png" },
+            { name: "TNT SERIES",     url: "https://dots.bestleague.world/cvatt.html?get=VE5UU2VyaWVz",                icon: "fas fa-tv",              logo: "tnt-series.png" },
+            { name: "CINEMAX",        url: "https://dots.bestleague.world/cvatt.html?get=Q2luZW1heA==",                icon: "fas fa-camera",          logo: "cinemax.png" },
+            { name: "DISCOVERY H&H",  url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SG9tZUhlYWx0aEhE&lang=1", icon: "fas fa-home", logo: "discovery-h-h.png" },
+            { name: "DISCOVERY",      url: "https://dots.bestleague.world/cvatt.html?get=RGlzY292ZXJ5SEQ=",            icon: "fas fa-globe",           logo: "discovery-channel.png" },
+            { name: "AXN",            url: "https://dots.bestleague.world/cvatt.html?get=QVhOSEQ=",                    icon: "fas fa-bolt",            logo: "axn.png" },
+            { name: "FX",             url: "https://dots.bestleague.world/cvatt.html?get=RlhIRA==",                    icon: "fas fa-skull",           logo: "fx.png" },
+            { name: "ANIMAL PLANET",  url: "https://dots.bestleague.world/cvatt.html?get=QW5pbWFsUGxhbmV0",           icon: "fas fa-paw",             logo: "animal-planet.png" },
+            { name: "MTV",            url: "https://dots.bestleague.world/cvatt.html?get=TVRWX0hE&lang=1",             icon: "fas fa-music",           logo: "mtv.png" }
+        ];
 
-    const fbOvl    = document.getElementById("football-overlay");
-    const fbList   = document.getElementById("football-list");
-    const toast    = document.getElementById("toast");
-    let toastTimer = null;
+        // ===== FÚTBOL =====
+        const footballOptions = [
+            { name: "⚽ Fútbol Opción 1", url: "https://alangulotv2.pl/",                              icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 2", url: "https://rojadirectaplay.com/",                         icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 3", url: "https://futbol-libre.su/",                             icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 4", url: "https://pelotalibretv.su/",                            icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 5", url: "https://pirlotv3.pl/index2.php",                       icon: "fas fa-futbol" },
+            { name: "⚽ Fútbol Opción 6", url: "https://www.pelisjuanita.com/tv/agenda-deportiva",     icon: "fas fa-calendar-alt" },
+            { name: "⚽ Fútbol Opción 7", url: "https://www.fctv33hd.pics/es",                         icon: "fas fa-tv" }
+        ];
 
-    function showToast(msg) {
-        toast.textContent = msg;
-        toast.style.display = "block";
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function(){ toast.style.display = "none"; }, 2800);
-    }
-
-    /* ── TV EN VIVO ── */
-    document.getElementById("btn-tv-vivo").onclick = function() {
-        location.href = "https://pelisjuanita.com/tv/";
-    };
-
-    /* ── TV OP.2 ── */
-    document.getElementById("btn-tv-op2").onclick = function() {
-        location.href = "https://www.cxtvenvivo.com/busqueda/?query=argentina";
-    };
-
-    /* ── FÚTBOL ── */
-    document.getElementById("btn-futbol").onclick = function() {
-        var html = "";
-        for (var i = 0; i < FOOTBALL.length; i++) {
-            html += "<button class=\"fb-btn\" data-url=\"" + FOOTBALL[i].url + "\">"
-                  + "<i class=\"fas fa-futbol\"></i> " + FOOTBALL[i].nombre
-                  + "</button>";
+        // ===== DETECCIÓN DE TIPO DE URL =====
+        function detectUrlType(url) {
+            if (!url) return "none";
+            const u = url.toLowerCase().split("?")[0];
+            if (u.endsWith(".m3u8") || u.includes(".m3u8")) return "hls";
+            if (u.endsWith(".mpd")  || u.includes(".mpd"))  return "dash";
+            if (u.endsWith(".m3u"))                         return "m3u";
+            return "web";
         }
-        fbList.innerHTML = html;
-        fbList.querySelectorAll(".fb-btn").forEach(function(btn) {
-            btn.onclick = function() { location.href = btn.getAttribute("data-url"); };
-        });
-        fbOvl.classList.add("visible");
-    };
 
-    /* ── Cerrar fútbol ── */
-    document.getElementById("football-close").onclick = function() {
-        fbOvl.classList.remove("visible");
-    };
-    fbOvl.onclick = function(e) {
-        if (e.target === fbOvl) fbOvl.classList.remove("visible");
-    };
+        // ===== CARGA DINÁMICA DE LIBRERÍAS (solo cuando se necesitan) =====
+        // OPTIMIZADO: evita cargar ~650KB en cada visita si no se reproduce ningún stream
+        function loadScript(src, callback) {
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = callback;
+            s.onerror = function() { callback(new Error('Error cargando ' + src)); };
+            document.head.appendChild(s);
+        }
 
-    /* ── Teclado / mando TV (Enter o Space activa el botón seleccionado) ── */
-    document.querySelectorAll(".menu-card").forEach(function(card) {
-        card.addEventListener("keydown", function(e) {
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                card.click();
+        let hlsReady  = false;
+        let dashReady = false;
+
+        function ensureHls(callback) {
+            if (hlsReady || window.Hls) { hlsReady = true; callback(); return; }
+            loadScript('https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js', function(err) {
+                if (!err) hlsReady = true;
+                callback(err);
+            });
+        }
+
+        function ensureDash(callback) {
+            if (dashReady || window.dashjs) { dashReady = true; callback(); return; }
+            loadScript('https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.7.0/dash.all.min.js', function(err) {
+                if (!err) dashReady = true;
+                callback(err);
+            });
+        }
+
+        // ===== INTENT URLS PARA APPS EXTERNAS =====
+        function buildMxIntent(url, title) {
+            return "intent://" + url.replace(/^https?:\/\//, "") +
+                "#Intent;action=android.intent.action.VIEW;" +
+                "type=video/mp4;" +
+                "package=com.mxtech.videoplayer.pro;" +
+                "S.title=" + encodeURIComponent(title || "") + ";" +
+                "end";
+        }
+
+        function buildVlcIntent(url) {
+            return "intent://" + url.replace(/^https?:\/\//, "") +
+                "#Intent;action=android.intent.action.VIEW;" +
+                "type=video/mp4;" +
+                "package=org.videolan.vlc;" +
+                "end";
+        }
+
+        // ===== ESTADO =====
+        let currentMode  = "main";
+        let currentUrl   = "";
+        let currentName  = "";
+        let hlsInstance  = null;
+        let dashInstance = null;
+
+        // ===== ELEMENTOS DOM =====
+        const gridEl         = document.getElementById("grid");
+        const backContainer  = document.getElementById("back-button-container");
+        const headerDiv      = document.getElementById("dynamic-header");
+
+        const modalOverlay   = document.getElementById("modal-overlay");
+        const modalTitle     = document.getElementById("modal-title");
+        const modalSubtitle  = document.getElementById("modal-subtitle");
+        const btnInline      = document.getElementById("btn-inline");
+        const btnMxPlayer    = document.getElementById("btn-mxplayer");
+        const btnVlc         = document.getElementById("btn-vlc");
+        const btnBrowser     = document.getElementById("btn-browser");
+        const btnCancelModal = document.getElementById("btn-cancel-modal");
+
+        const playerOverlay   = document.getElementById("player-overlay");
+        const playerChannelNm = document.getElementById("player-channel-name");
+        const mainVideo       = document.getElementById("main-video");
+        const playerStatus    = document.getElementById("player-status");
+        const btnClosePlayer  = document.getElementById("btn-close-player");
+
+        // ===== MODAL =====
+        function showModal(url, name) {
+            currentUrl  = url;
+            currentName = name;
+            const type  = detectUrlType(url);
+
+            modalTitle.textContent    = name;
+            modalSubtitle.textContent = type === "hls"  ? "Stream HLS (m3u8)" :
+                                        type === "dash" ? "Stream DASH (mpd)" :
+                                        type === "m3u"  ? "Lista M3U"         :
+                                        "Sitio web externo";
+
+            btnInline.style.display   = (type === "hls" || type === "dash") ? "flex" : "none";
+            btnMxPlayer.style.display = (type === "hls" || type === "dash") ? "flex" : "none";
+            btnVlc.style.display      = (type === "hls" || type === "dash") ? "flex" : "none";
+            btnBrowser.style.display  = "flex";
+
+            modalOverlay.classList.add("visible");
+        }
+
+        function hideModal() {
+            modalOverlay.classList.remove("visible");
+        }
+
+        // ===== REPRODUCTOR INLINE =====
+        function destroyPlayers() {
+            if (hlsInstance)  { hlsInstance.destroy(); hlsInstance = null; }
+            if (dashInstance) { dashInstance.reset();  dashInstance = null; }
+            mainVideo.src = "";
+            mainVideo.load();
+        }
+
+        let statusTimer = null;
+        function showStatus(msg) {
+            playerStatus.textContent   = msg;
+            playerStatus.style.display = "block";
+            clearTimeout(statusTimer);
+            statusTimer = setTimeout(function() { playerStatus.style.display = "none"; }, 3000);
+        }
+
+        // ===== DETECCIÓN DE CAPACIDAD DEL DISPOSITIVO =====
+        // Lee señales del hardware disponibles en navegadores Chromium (TvBro incluido).
+        // Devuelve "low" (TV Box genérico), "mid" o "high" (ONN, Google TV, etc.)
+        // Si el navegador no expone algún dato, asume valores intermedios seguros.
+        function detectDeviceProfile() {
+            const nucleos = navigator.hardwareConcurrency || 4;  // núcleos de CPU
+            const ram     = navigator.deviceMemory       || 2;   // GB de RAM (redondeado)
+
+            // Puntuación simple: cada indicador suma puntos
+            let score = 0;
+            if (nucleos >= 8)       score += 2;
+            else if (nucleos >= 4)  score += 1;
+
+            if (ram >= 4)           score += 2;
+            else if (ram >= 2)      score += 1;
+
+            if      (score >= 4) return "high";   // Chromecast, ONN, TV potente
+            else if (score >= 2) return "mid";    // TV Box con 2GB RAM y 4 núcleos
+            else                 return "low";    // TV Box genérico, 1-2GB, 2 núcleos
+        }
+
+        // Configuración de HLS.js según perfil detectado.
+        // capLevelToPlayerSize siempre activo: nunca pide más resolución de la que
+        // ocupa el elemento de video en pantalla — beneficia a todos los dispositivos.
+        function buildHlsConfig(profile) {
+            if (profile === "low") {
+                return {
+                    enableWorker:      false,  // los workers consumen RAM extra
+                    lowLatencyMode:    false,
+                    maxBufferLength:   10,     // buffer pequeño = menos RAM usada
+                    maxMaxBufferLength: 20,
+                    capLevelToPlayerSize: true,
+                    startLevel:        0,      // arranca en la calidad más baja disponible
+                    abrEwmaDefaultEstimate: 500000  // asume ~500 Kbps al inicio
+                };
             }
-        });
-    });
+            if (profile === "mid") {
+                return {
+                    enableWorker:      false,
+                    lowLatencyMode:    false,
+                    maxBufferLength:   20,
+                    maxMaxBufferLength: 40,
+                    capLevelToPlayerSize: true,
+                    startLevel:        -1,     // HLS elige automáticamente (-1 = auto)
+                    abrEwmaDefaultEstimate: 1500000  // asume ~1.5 Mbps al inicio
+                };
+            }
+            // high — sin restricciones, HLS gestiona todo automáticamente
+            return {
+                enableWorker:      false,
+                lowLatencyMode:    true,
+                maxBufferLength:   30,
+                maxMaxBufferLength: 60,
+                capLevelToPlayerSize: true,
+                startLevel:        -1,
+                abrEwmaDefaultEstimate: 5000000  // asume ~5 Mbps al inicio
+            };
+        }
 
-    window.addEventListener("pageshow", function(e) {
-        if (e.persisted) window.location.reload();
-    });
+        function openInline(url, name) {
+            destroyPlayers();
+            playerChannelNm.textContent = name;
+            playerOverlay.classList.add("visible");
+
+            const type    = detectUrlType(url);
+            const profile = detectDeviceProfile();  // "low" | "mid" | "high"
+
+            if (type === "hls") {
+                ensureHls(function(err) {
+                    if (err) { showStatus("⚠ Error cargando HLS.js"); return; }
+                    if (Hls.isSupported()) {
+                        const hlsConfig = buildHlsConfig(profile);
+                        hlsInstance = new Hls(hlsConfig);
+                        hlsInstance.loadSource(url);
+                        hlsInstance.attachMedia(mainVideo);
+                        hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+                            mainVideo.play();
+                            const label = profile === "low"  ? "🟡 Modo ahorro (dispositivo básico)" :
+                                          profile === "mid"  ? "🟢 Modo balanceado" :
+                                                              "🔵 Modo HD (dispositivo potente)";
+                            showStatus("▶ Reproduciendo — " + label);
+                        });
+                        hlsInstance.on(Hls.Events.ERROR, function(event, data) {
+                            if (data.fatal) showStatus("⚠ Error de stream");
+                        });
+                    } else if (mainVideo.canPlayType('application/vnd.apple.mpegurl')) {
+                        mainVideo.src = url;
+                        mainVideo.play();
+                    } else {
+                        showStatus("⚠ HLS no soportado en este browser");
+                    }
+                });
+            } else if (type === "dash") {
+                ensureDash(function(err) {
+                    if (err) { showStatus("⚠ Error cargando dash.js"); return; }
+                    dashInstance = dashjs.MediaPlayer().create();
+                    dashInstance.initialize(mainVideo, url, true);
+                    showStatus("▶ Reproduciendo DASH");
+                });
+            } else {
+                mainVideo.src = url;
+                mainVideo.play();
+            }
+        }
+
+        function closePlayer() {
+            destroyPlayers();
+            playerOverlay.classList.remove("visible");
+        }
+
+        // ===== EVENTOS DEL MODAL =====
+        btnInline.onclick = function() {
+            hideModal();
+            openInline(currentUrl, currentName);
+        };
+
+        btnMxPlayer.onclick = function() {
+            hideModal();
+            try { window.location.href = buildMxIntent(currentUrl, currentName); }
+            catch(e) { showStatus("MX Player no encontrado"); }
+        };
+
+        btnVlc.onclick = function() {
+            hideModal();
+            try { window.location.href = buildVlcIntent(currentUrl); }
+            catch(e) { showStatus("VLC no encontrado"); }
+        };
+
+        btnBrowser.onclick = function() {
+            hideModal();
+            window.location.href = currentUrl;
+        };
+
+        btnCancelModal.onclick = hideModal;
+
+        modalOverlay.onclick = function(e) {
+            if (e.target === modalOverlay) hideModal();
+        };
+
+        btnClosePlayer.onclick = closePlayer;
+
+        // ===== CLICK EN CARD =====
+        function handleCardClick(url, name, isTrigger) {
+            if (isTrigger) { showFootball(); return; }
+            if (!url) return;
+            const type = detectUrlType(url);
+            if (type === "hls" || type === "dash") {
+                showModal(url, name);
+            } else {
+                window.location.href = url;
+            }
+        }
+
+        // ===== HTML DEL LOGO/ÍCONO (con lazy loading) =====
+        // OPTIMIZADO: loading="lazy" evita cargar logos fuera de pantalla al inicio
+        function logoHtml(ch) {
+            if (ch.logo) {
+                return '<img class="logo-img" loading="lazy" src="logos/' + ch.logo + '" alt="' + ch.name + '" ' +
+                    'onerror="this.style.display=\'none\';this.nextElementSibling.classList.add(\'show\')">' +
+                    '<i class="logo-fallback ' + (ch.icon || 'fas fa-tv') + '"></i>';
+            }
+            return '<i class="' + (ch.icon || 'fas fa-tv') + '"></i>';
+        }
+
+        // ===== RENDER =====
+        function renderGrid(list) {
+            const html = list.map(function(ch) {
+                return '<div class="card locked" tabindex="0" ' +
+                    'data-url="' + (ch.url || '') + '" ' +
+                    'data-trigger="' + (ch.isTrigger ? "1" : "0") + '" ' +
+                    'data-name="' + ch.name + '">' +
+                    logoHtml(ch) +
+                    '<span>' + ch.name + '</span>' +
+                    '</div>';
+            });
+            gridEl.innerHTML = html.join('');
+            attachCardEvents(gridEl.children);
+        }
+
+        function attachCardEvents(cards) {
+            Array.from(cards).forEach(function(card) {
+                const url     = card.getAttribute('data-url');
+                const name    = card.getAttribute('data-name');
+                const trigger = card.getAttribute('data-trigger') === "1";
+                card.onclick = function() { handleCardClick(url, name, trigger); };
+                card.onkeydown = function(e) {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleCardClick(url, name, trigger);
+                    }
+                };
+            });
+        }
+
+        // ===== SUBMENÚ FÚTBOL =====
+        function showFootball() {
+            if (currentMode === "football") return;
+            currentMode = "football";
+            headerDiv.innerHTML = '<h1><i class="fas fa-futbol"></i> MENU FUTBOL - OPCIONES <i class="fas fa-tv"></i></h1>';
+            backContainer.innerHTML = '<button class="back-button" id="btn-back-main"><i class="fas fa-arrow-left"></i> Volver al menú principal</button>';
+            document.getElementById("btn-back-main").onclick = goToMain;
+            renderGrid(footballOptions);
+        }
+
+        function goToMain() {
+            if (currentMode === "main") return;
+            currentMode = "main";
+            headerDiv.innerHTML = '<h1><i class="fas fa-tv"></i> MENU STPC TV <i class="fas fa-satellite-dish"></i></h1>';
+            backContainer.innerHTML = '';
+            renderGrid(channels);
+        }
+
+        // ===== INIT =====
+        renderGrid(channels);
+
+        // Recargar si la página viene de caché del navegador (back/forward)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) window.location.reload();
+        });
+
+        if (window.console) console.log("MENU STPC TV v3 — Optimizado para TV Box | Carga diferida HLS+DASH | lazy logos");
     </script>
 </body>
 </html>
