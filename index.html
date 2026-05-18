@@ -10,7 +10,6 @@
     <meta http-equiv="Expires" content="0">
     <link rel="icon" href="logos/TV.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- HLS.js se carga dinámicamente solo cuando se necesita -->
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
 
@@ -22,8 +21,6 @@
             -webkit-tap-highlight-color:transparent;
         }
 
-        /* OPTIMIZADO: position:fixed en el pseudo-elemento evita re-renders
-           por scroll en Android/TVBro. Sin background-attachment:fixed. */
         body::before{
             content:"";
             position:fixed;
@@ -35,7 +32,6 @@
             pointer-events:none;
         }
 
-        /* HEADER */
         .header{
             text-align:center;
             padding:20px 20px 18px;
@@ -50,7 +46,6 @@
             -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
         }
 
-        /* TARJETAS ESPECIALES */
         .special-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:580px;margin:0 auto;}
         .special-card{
             background:linear-gradient(135deg,#1a1a2e,#16213e);
@@ -60,14 +55,12 @@
             transition:border-color .2s,box-shadow .2s;
             -webkit-user-select:none;user-select:none;
         }
-        /* transform solo en hover (no en idle) para evitar GPU layer innecesario */
         .special-card:hover{border-color:#ff9800;box-shadow:0 6px 24px rgba(255,152,0,.25);}
         .special-card:active{opacity:.8;}
         .sc-logo{width:64px;height:42px;object-fit:contain;border-radius:6px;}
         .sc-icon{font-size:28px;color:#ffaa33;}
         .sc-name{font-size:11px;font-weight:700;color:#ffcc66;letter-spacing:.3px;}
 
-        /* GRID — minmax más amplio que el original para que TVs llene bien la pantalla */
         .grid{
             display:grid;
             grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
@@ -84,13 +77,11 @@
             display:flex;flex-direction:column;align-items:center;gap:8px;
             position:relative;
             -webkit-user-select:none;user-select:none;
-            /* Sin transition en idle, solo border-color rápido */
         }
         .card:hover{background:#2a2a4e;border-color:#ffaa33;}
         .card:active{opacity:.8;}
         .card:focus-visible{outline:3px solid #ff9800;outline-offset:2px;background:#2a2a4e;border-color:#ff9800;}
 
-        /* OPTIMIZADO: logo-img con lazy loading — igual que el original */
         .card .logo-img{width:80px;height:50px;object-fit:contain;border-radius:6px;}
         .card .logo-fallback{display:none;font-size:34px;color:#ffaa33;}
         .card .logo-fallback.show{display:inline-block;}
@@ -103,10 +94,9 @@
             padding:2px 8px;border-radius:10px;white-space:nowrap;
         }
 
-        /* ===== MODAL CANAL ===== */
         #modal-overlay{
             display:none;position:fixed;inset:0;
-            background:rgba(0,0,0,.9);z-index:200;
+            background:rgba(0,0,0,.95);z-index:200;
             align-items:center;justify-content:center;padding:14px;
         }
         #modal-overlay.visible{display:flex;}
@@ -116,30 +106,39 @@
             overflow-y:auto;display:flex;flex-direction:column;
         }
 
-        /* Player */
         #modal-player-wrap{
             width:100%;aspect-ratio:16/9;background:#000;
             border-radius:18px 18px 0 0;overflow:hidden;position:relative;flex-shrink:0;
         }
         #modal-video,#modal-iframe{width:100%;height:100%;border:none;background:#000;display:none;}
-        .player-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#444;}
-        .player-ph i{font-size:3rem;}
-        .player-ph span{font-size:.88rem;}
-        #modal-close{
-            position:absolute;top:10px;right:10px;background:rgba(0,0,0,.75);
-            border:none;color:#fff;width:36px;height:36px;border-radius:50%;
-            font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;
+        /* Deshabilitar controls nativos del video para evitar publicidad */
+        #modal-video{pointer-events:auto;}
+        
+        .player-ph{
+            position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+            background:#0a0a0a;color:#666;text-align:center;padding:20px;
         }
+        .player-ph i{font-size:3rem;color:#ff9800;}
+        .player-ph span{font-size:.88rem;}
+        .player-ph small{font-size:.7rem;color:#ffaa33;margin-top:5px;}
+        
+        #modal-close, #modal-fullscreen{
+            position:absolute;top:10px;background:rgba(0,0,0,.75);
+            border:none;color:#fff;width:36px;height:36px;border-radius:50%;
+            cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;
+            transition:background .2s;
+        }
+        #modal-close{right:10px;}
+        #modal-fullscreen{right:55px;}
         #modal-close:hover{background:#cc3300;}
+        #modal-fullscreen:hover{background:#ff9800;}
 
-        /* Info canal */
         .modal-info{display:flex;align-items:center;gap:13px;padding:15px 18px 10px;border-bottom:1px solid rgba(255,255,255,.07);}
         .modal-info-logo{width:50px;height:34px;object-fit:contain;border-radius:5px;background:rgba(255,255,255,.04);padding:3px;flex-shrink:0;}
         .modal-info-icon{font-size:1.9rem;color:#ffaa33;flex-shrink:0;}
         .modal-info-text h2{font-size:1.05rem;font-weight:800;}
         .modal-info-text p{font-size:.76rem;color:#777;margin-top:2px;}
 
-        /* Servidores */
         .srv-label{padding:13px 18px 7px;font-size:.7rem;font-weight:800;color:#666;letter-spacing:1.5px;text-transform:uppercase;}
         .srv-list{padding:0 14px 6px;display:flex;flex-direction:column;gap:7px;}
         .srv-btn{
@@ -155,9 +154,9 @@
         .srv-btn:hover{background:rgba(255,152,0,.1);border-color:#ff9800;}
         .srv-btn.active{background:rgba(255,152,0,.18);border-color:#ff9800;color:#ffaa33;}
         .srv-btn small{display:block;font-size:.68rem;color:#666;font-weight:400;margin-top:1px;}
-        .modal-tip{padding:9px 18px 16px;font-size:.76rem;color:#666;display:flex;align-items:center;gap:5px;}
+        .modal-tip{padding:9px 18px 16px;font-size:.76rem;color:#666;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+        .modal-tip i{margin-right:3px;}
 
-        /* FÚTBOL */
         #football-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;align-items:center;justify-content:center;padding:14px;}
         #football-overlay.visible{display:flex;}
         #football-box{background:#0f0f24;border:1.5px solid rgba(255,152,0,.25);border-radius:20px;width:100%;max-width:420px;padding:24px 18px;}
@@ -172,7 +171,6 @@
         .fb-btn:hover{background:rgba(255,152,0,.1);border-color:#ff9800;}
         #football-close{background:none;border:none;color:#666;font-size:.85rem;cursor:pointer;display:block;margin:6px auto 0;padding:6px 16px;}
 
-        /* TOAST */
         #toast{
             position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
             background:rgba(0,0,0,.88);color:#ffaa33;padding:9px 22px;
@@ -234,12 +232,14 @@
     <div id="modal-box">
         <div id="modal-player-wrap">
             <button id="modal-close"><i class="fas fa-times"></i></button>
+            <button id="modal-fullscreen"><i class="fas fa-expand"></i></button>
             <div class="player-ph" id="player-ph">
                 <i class="fas fa-play-circle"></i>
                 <span>Elegí un servidor para reproducir</span>
+                <small>🖥️ Usá el botón <i class="fas fa-expand"></i> (arriba a la derecha) para pantalla completa SIN PUBLICIDAD</small>
             </div>
-            <video id="modal-video" controls playsinline webkit-playsinline></video>
-            <iframe id="modal-iframe" allowfullscreen allow="autoplay; fullscreen" scrolling="no"></iframe>
+            <video id="modal-video" playsinline webkit-playsinline></video>
+            <iframe id="modal-iframe" allow="autoplay; fullscreen" scrolling="no" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-presentation"></iframe>
         </div>
         <div class="modal-info">
             <img id="modal-logo" class="modal-info-logo" src="" alt="" style="display:none;"
@@ -252,7 +252,12 @@
         </div>
         <div class="srv-label">ELEGÍ UN SERVIDOR:</div>
         <div class="srv-list" id="srv-list"></div>
-        <div class="modal-tip">💡 Si un servidor no carga, probá con otro.</div>
+        <div class="modal-tip">
+            <i class="fas fa-shield-alt"></i> Consejos:
+            <span>✅ Servidores "STPC TV" = sin publicidad</span>
+            <span>🔵 Botón <i class="fas fa-expand"></i> = Pantalla completa limpia</span>
+            <span>⚠️ Si un servidor no carga, probá otro.</span>
+        </div>
     </div>
 </div>
 
@@ -272,7 +277,6 @@ const CANALES  = [{"id": "america", "nombre": "América TV", "pais": "Argentina"
 const FOOTBALL = [{"nombre": "⚽ Fútbol Opción 1", "url": "https://alangulotv2.pl/"}, {"nombre": "⚽ Fútbol Opción 2", "url": "https://rojadirectaplay.com/"}, {"nombre": "⚽ Fútbol Opción 3", "url": "https://futbol-libre.su/"}, {"nombre": "⚽ Fútbol Opción 4", "url": "https://pelotalibretv.su/"}, {"nombre": "⚽ Fútbol Opción 5", "url": "https://pirlotv3.pl/index2.php"}, {"nombre": "⚽ Fútbol Opción 6", "url": "https://www.pelisjuanita.com/tv/agenda-deportiva"}, {"nombre": "⚽ Fútbol Opción 7", "url": "https://www.fctv33hd.pics/es"}];
 const BASE_IMG = "https://zonahack.com.ar/img/";
 
-// ===== DOM =====
 const gridEl      = document.getElementById("grid");
 const modalOvl    = document.getElementById("modal-overlay");
 const modalNombre = document.getElementById("modal-nombre");
@@ -287,20 +291,40 @@ const playerPh    = document.getElementById("player-ph");
 const fbOvl       = document.getElementById("football-overlay");
 const fbList      = document.getElementById("football-list");
 const toast       = document.getElementById("toast");
+const fullscreenBtn = document.getElementById("modal-fullscreen");
 
 let hlsInstance = null;
 let activeSrv   = null;
 let toastTimer  = null;
 let hlsReady    = false;
 
-// ===== TOAST =====
+// Pantalla completa manual (SIN publicidad)
+function toggleFullscreen() {
+    const playerWrap = document.getElementById('modal-player-wrap');
+    if (!playerWrap) return;
+    
+    if (!document.fullscreenElement) {
+        playerWrap.requestFullscreen().catch(err => {
+            showToast("⚠️ Pantalla completa no disponible: " + err.message);
+        });
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+if (fullscreenBtn) {
+    fullscreenBtn.onclick = function(e) {
+        e.stopPropagation();
+        toggleFullscreen();
+    };
+}
+
 function showToast(msg){
     toast.textContent=msg; toast.style.display="block";
     clearTimeout(toastTimer);
     toastTimer=setTimeout(function(){ toast.style.display="none"; }, 2800);
 }
 
-// ===== HLS lazy — igual que el original =====
 function ensureHls(cb){
     if(hlsReady || window.Hls){ hlsReady=true; cb(); return; }
     var s=document.createElement("script");
@@ -310,7 +334,6 @@ function ensureHls(cb){
     document.head.appendChild(s);
 }
 
-// ===== DETECCIÓN DE DISPOSITIVO — copiado del original =====
 function detectDeviceProfile(){
     var cores = navigator.hardwareConcurrency || 2;
     var ram   = navigator.deviceMemory       || 1;
@@ -325,7 +348,6 @@ function detectDeviceProfile(){
     return "low";
 }
 
-// ===== CONFIG HLS según perfil — copiado del original =====
 function buildHlsConfig(profile){
     if(profile === "low") return {
         enableWorker:false, lowLatencyMode:false,
@@ -354,7 +376,6 @@ function detType(url){
     return "iframe";
 }
 
-// ===== PLAYER =====
 function stopPlayer(){
     if(hlsInstance){ hlsInstance.destroy(); hlsInstance=null; }
     modalVideo.pause();
@@ -369,7 +390,6 @@ function stopPlayer(){
 function playServer(url, openTab){
     stopPlayer();
 
-    // Servidores con X-Frame-Options: abrir en nueva pestaña sin paso extra
     if(openTab){
         window.open(url, "_blank", "noopener");
         showToast("📺 Abriendo canal en nueva pestaña...");
@@ -406,21 +426,18 @@ function playServer(url, openTab){
             }
         });
     } else {
-        // iframe: CvatTV, La14HD, EmbedMe, BolaLoca, StreamTP, STPC embeds...
         playerPh.style.display="none";
         modalIframe.style.display="block";
         modalIframe.src=url;
     }
 }
 
-// ===== MODAL =====
 function openModal(canal){
     stopPlayer();
     activeSrv=null;
     modalNombre.textContent = canal.nombre;
     modalMeta.textContent   = canal.pais+" · "+canal.categoria;
 
-    // Logo: local STPC → remoto ZH → ícono FA
     if(canal.stpc_logo){
         modalLogo.src="logos/"+canal.stpc_logo;
         modalLogo.style.display="block"; modalIcon.style.display="none";
@@ -442,7 +459,6 @@ function openModal(canal){
         };
     }
 
-    // Servidores
     var html="";
     for(var i=0;i<canal.servidores.length;i++){
         var s=canal.servidores[i];
@@ -451,9 +467,9 @@ function openModal(canal){
         var iconCls = isStpc ? "fas fa-satellite-dish stpc-icon"
                     : isExt  ? "fas fa-external-link-alt ext-icon"
                     :          "fas fa-play srv-icon";
-        var sub = isStpc ? "Tu servidor original"
-                : isExt  ? "Abre en nueva pestaña"
-                :          "Servidor "+(i+1);
+        var sub = isStpc ? "✅ Sin publicidad - Recomendado"
+                : isExt  ? "🔗 Abre en nueva pestaña"
+                :          "⚙️ Servidor "+(i+1);
         html+="<button class=\"srv-btn\" data-url=\""+s.url+"\" data-tab=\""+(isExt?"1":"0")+"\">"
             +"<i class=\""+iconCls+"\"></i>"
             +"<div>"+s.nombre+"<small>"+sub+"</small></div>"
@@ -472,7 +488,6 @@ function openModal(canal){
         })(btns[j]);
     }
 
-    // Autoplay primer servidor
     if(btns.length) btns[0].click();
 
     modalOvl.classList.add("visible");
@@ -488,7 +503,6 @@ function closeModal(){
 modalClose.onclick=closeModal;
 modalOvl.onclick=function(e){ if(e.target===modalOvl) closeModal(); };
 
-// ===== RENDER GRID — logo-img lazy loading igual que original =====
 function logoHtml(canal){
     if(canal.stpc_logo){
         var zhFb=BASE_IMG+canal.id+".png";
@@ -528,7 +542,6 @@ function renderGrid(lista){
     }
 }
 
-// ===== ESPECIALES — location.href sin pestañas extra =====
 document.getElementById("btn-tv-vivo").onclick=function(){ location.href="https://pelisjuanita.com/tv/"; };
 document.getElementById("btn-tv-op2").onclick=function(){ location.href="https://www.cxtvenvivo.com/busqueda/?query=argentina"; };
 document.getElementById("btn-futbol").onclick=function(){
@@ -546,12 +559,11 @@ document.getElementById("btn-futbol").onclick=function(){
 document.getElementById("football-close").onclick=function(){ fbOvl.classList.remove("visible"); };
 fbOvl.onclick=function(e){ if(e.target===fbOvl) fbOvl.classList.remove("visible"); };
 
-// ===== INIT =====
 renderGrid(CANALES);
 
 window.addEventListener("pageshow",function(e){ if(e.persisted) window.location.reload(); });
 
-if(window.console) console.log("STPC TV v5 — 100 canales | Optimizado TV Box | HLS adaptativo | lazy logos");
+if(window.console) console.log("✅ STPC TV v5.1 - Pantalla completa sin publicidad activada | Servidores STPC = más limpios");
 </script>
 </body>
 </html>
